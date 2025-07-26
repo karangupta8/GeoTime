@@ -2,19 +2,11 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, ExternalLink } from 'lucide-react';
-
-interface Event {
-  id: number;
-  title: string;
-  date: string;
-  location: [number, number];
-  description: string;
-  category: string;
-}
+import { Calendar, MapPin, ExternalLink, Verified } from 'lucide-react';
+import { HistoricalEvent } from '@/types/HistoricalEvent';
 
 interface EventPopupProps {
-  event: Event | null;
+  event: HistoricalEvent | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -37,7 +29,10 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, isOpen, onClose }) => {
       'Science': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
       'Disaster': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
       'Legal': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-      'Cultural': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+      'Cultural': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+      'War': 'bg-red-200 text-red-900 dark:bg-red-800 dark:text-red-100',
+      'Economic': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+      'Historical': 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
     };
     return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
   };
@@ -57,30 +52,64 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, isOpen, onClose }) => {
               <Calendar className="w-4 h-4" />
               <span>{formatDate(event.date)}</span>
             </div>
-            <Badge className={getCategoryColor(event.category)}>
-              {event.category}
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge className={getCategoryColor(event.category)}>
+                {event.category}
+              </Badge>
+              {event.verified && (
+                <div className="flex items-center gap-1 text-xs text-accent">
+                  <Verified className="w-3 h-3" />
+                  <span>Verified</span>
+                </div>
+              )}
+            </div>
           </div>
         </DialogHeader>
         
         <div className="space-y-4">
           <div className="flex items-start gap-2">
             <MapPin className="w-4 h-4 mt-1 text-accent" />
-            <span className="text-sm text-muted-foreground">
-              Coordinates: {event.location[1].toFixed(4)}°N, {event.location[0].toFixed(4)}°E
-            </span>
+            <div className="text-sm text-muted-foreground">
+              <div>{event.location.name}</div>
+              <div className="text-xs">
+                {event.location.latitude.toFixed(4)}°N, {event.location.longitude.toFixed(4)}°E
+              </div>
+            </div>
           </div>
+          
+          {event.images && event.images.length > 0 && (
+            <div className="flex gap-2">
+              {event.images.slice(0, 2).map((image, index) => (
+                <img 
+                  key={index}
+                  src={image} 
+                  alt={`${event.title} image ${index + 1}`}
+                  className="w-20 h-20 object-cover rounded border border-border/50"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ))}
+            </div>
+          )}
           
           <p className="text-foreground leading-relaxed">
             {event.description}
           </p>
           
+          {event.sources && event.sources.length > 0 && (
+            <div className="text-xs text-muted-foreground">
+              <span className="font-medium">Sources: </span>
+              {event.sources.join(', ')}
+            </div>
+          )}
+          
           <div className="pt-4 border-t border-border/50">
             <Button 
               className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
               onClick={() => {
-                // In a real implementation, this would link to the actual Wikipedia article
-                window.open(`https://en.wikipedia.org/wiki/${encodeURIComponent(event.title)}`, '_blank');
+                const url = event.wikipediaUrl || `https://en.wikipedia.org/wiki/${encodeURIComponent(event.title)}`;
+                window.open(url, '_blank');
               }}
             >
               <ExternalLink className="w-4 h-4 mr-2" />

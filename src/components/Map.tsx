@@ -5,50 +5,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-
-// For demo purposes - would be replaced with Wikipedia integration
-const historicalEvents = [
-  {
-    id: 1,
-    title: "Fall of the Berlin Wall",
-    date: "1989-11-09",
-    location: [13.3777, 52.5163], // Berlin
-    description: "The Berlin Wall, a symbol of the Cold War division, was torn down by East and West Berliners, marking the beginning of German reunification.",
-    category: "Political"
-  },
-  {
-    id: 2,
-    title: "Moon Landing",
-    date: "1969-07-20",
-    location: [-95.369, 29.7604], // Houston (Mission Control)
-    description: "Neil Armstrong and Buzz Aldrin became the first humans to land on the Moon during the Apollo 11 mission.",
-    category: "Science"
-  },
-  {
-    id: 3,
-    title: "Great Fire of London",
-    date: "1666-09-02",
-    location: [-0.0955, 51.5122], // London
-    description: "A major conflagration that swept through the medieval City of London, destroying 13,200 houses and 87 churches.",
-    category: "Disaster"
-  },
-  {
-    id: 4,
-    title: "French Revolution Begins",
-    date: "1789-07-14",
-    location: [2.3764, 48.8534], // Paris
-    description: "The storming of the Bastille marked the beginning of the French Revolution, fundamentally changing French society.",
-    category: "Political"
-  },
-  {
-    id: 5,
-    title: "Magna Carta Signed",
-    date: "1215-06-15",
-    location: [-0.5544, 51.4434], // Runnymede
-    description: "King John of England signed the Magna Carta, establishing the principle that everyone, including the king, was subject to the law.",
-    category: "Legal"
-  }
-];
+import { HistoryDataService } from '@/services/HistoryDataService';
+import { HistoricalEvent } from '@/types/HistoricalEvent';
 
 interface MapProps {
   selectedYear: number;
@@ -61,7 +19,10 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const [apiKey, setApiKey] = useState<string>('');
   const [hasApiKey, setHasApiKey] = useState<boolean>(false);
+  const [events, setEvents] = useState<HistoricalEvent[]>([]);
+  const [isLoadingEvents, setIsLoadingEvents] = useState<boolean>(false);
   const { toast } = useToast();
+  const historyService = HistoryDataService.getInstance();
 
   // Check if user has Mapbox API key
   useEffect(() => {
@@ -123,7 +84,31 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
     };
   }, [hasApiKey]);
 
-  // Update markers based on selected year
+  // Load historical events for the selected year
+  useEffect(() => {
+    if (!hasApiKey) return;
+
+    const loadEvents = async () => {
+      setIsLoadingEvents(true);
+      try {
+        const historicalEvents = await historyService.getHistoricalEvents(selectedYear);
+        setEvents(historicalEvents);
+      } catch (error) {
+        console.error('Error loading historical events:', error);
+        toast({
+          title: "Error Loading Events",
+          description: "Failed to load historical events. Using demo data.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoadingEvents(false);
+      }
+    };
+
+    loadEvents();
+  }, [selectedYear, hasApiKey, historyService, toast]);
+
+  // Update markers based on loaded events
   useEffect(() => {
     if (!map.current || !hasApiKey) return;
 
@@ -132,7 +117,7 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
     markersRef.current = [];
 
     // Filter events by year
-    const filteredEvents = historicalEvents.filter(event => {
+    const filteredEvents = events.filter(event => {
       const eventYear = new Date(event.date).getFullYear();
       return eventYear <= selectedYear;
     });
@@ -149,7 +134,7 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
       `;
 
       const marker = new mapboxgl.Marker(markerElement)
-        .setLngLat(event.location as [number, number])
+        .setLngLat([event.location.longitude, event.location.latitude])
         .addTo(map.current!);
 
       // Add click event
@@ -159,7 +144,7 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
 
       markersRef.current.push(marker);
     });
-  }, [selectedYear, hasApiKey, onEventSelect]);
+  }, [events, selectedYear, hasApiKey, onEventSelect]);
 
   if (!hasApiKey) {
     return (

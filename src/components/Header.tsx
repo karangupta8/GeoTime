@@ -1,7 +1,12 @@
 import React from 'react';
-import { Globe2, Clock } from 'lucide-react';
+import { Globe2, Clock, Settings } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onSettingsClick: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onSettingsClick }) => {
   return (
     <header className="absolute top-0 left-0 right-0 z-10 p-6">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
@@ -15,9 +20,20 @@ const Header: React.FC = () => {
           </div>
         </div>
         
-        <div className="flex items-center gap-2 text-background/80">
-          <Clock className="w-5 h-5" />
-          <span className="text-sm">Interactive Historical Timeline</span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 text-background/80">
+            <Clock className="w-5 h-5" />
+            <span className="text-sm">Interactive Historical Timeline</span>
+          </div>
+          
+          <Button
+            onClick={onSettingsClick}
+            variant="ghost"
+            size="sm"
+            className="bg-background/10 backdrop-blur-sm border border-white/20 text-background hover:bg-white/20"
+          >
+            <Settings className="w-4 h-4" />
+          </Button>
         </div>
       </div>
     </header>
