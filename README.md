@@ -1,40 +1,34 @@
-# Welcome to your Lovable project
+# GeoTime - Interactive Historical Map
 
-## Project info
+An interactive web application that displays historical events on a 3D globe using Mapbox GL JS and a Node.js backend API.
 
-**URL**: https://lovable.dev/projects/f1fb4145-9716-420a-aada-bd22d5f21fd5
+## Features
 
-## How can I edit this code?
+- 🗺️ Interactive 3D globe with Mapbox GL JS
+- 📅 Timeline slider to explore events by year
+- 🎯 Historical event markers with detailed information
+- 🔄 Real-time data from Wikipedia API and curated events
+- 💾 Backend API with caching system
+- 🎨 Beautiful dark theme with glowing markers
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/f1fb4145-9716-420a-aada-bd22d5f21fd5) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Quick Start
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Install dependencies (frontend + backend)
+npm install
+cd server && npm install && cd ..
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start both frontend and backend
 npm run dev
 ```
+
+Visit http://localhost:8080 and enter your Mapbox API key when prompted.
+
+## API Endpoints
+
+- `GET /api/events?year=1969` - Get historical events by year
+- `GET /api/events/:id` - Get specific event details  
+- `GET /api/categories` - Get available categories
 
 **Edit a file directly in GitHub**
 

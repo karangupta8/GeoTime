@@ -37,11 +37,8 @@ const DataSourcePanel: React.FC<DataSourcePanelProps> = ({
   const handleRefreshData = async () => {
     setIsLoading(true);
     try {
-      // Clear any cached data to force refresh
-      const keys = Object.keys(localStorage).filter(key => 
-        key.startsWith('wikipedia_') || key.startsWith('custom_')
-      );
-      keys.forEach(key => localStorage.removeItem(key));
+      // Clear cache in the data service
+      historyService.clearCache();
       
       onDataSourceChange();
     } catch (error) {
@@ -53,18 +50,14 @@ const DataSourcePanel: React.FC<DataSourcePanelProps> = ({
 
   const getSourceDescription = (sourceName: string) => {
     const descriptions = {
-      'Wikipedia': 'Real-time historical events from Wikipedia API with geographic data',
-      'LocalData': 'Curated demo events for demonstration and fallback purposes'
+      'API': 'Backend API serving Wikipedia events and curated historical data with geographic coordinates'
     };
     return descriptions[sourceName as keyof typeof descriptions] || 'External data source';
   };
 
   const getSourceStatus = (sourceName: string) => {
-    if (sourceName === 'Wikipedia') {
-      return 'Live API';
-    }
-    if (sourceName === 'LocalData') {
-      return 'Demo Data';
+    if (sourceName === 'API') {
+      return 'Backend API';
     }
     return 'Unknown';
   };
@@ -145,7 +138,7 @@ const DataSourcePanel: React.FC<DataSourcePanelProps> = ({
             
             <div className="text-xs text-muted-foreground text-center space-y-1">
               <p>Changes take effect immediately</p>
-              <p>Wikipedia data is cached for 24 hours</p>
+              <p>API data is cached for 5 minutes</p>
             </div>
           </div>
         </CardContent>

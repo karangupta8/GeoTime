@@ -1,11 +1,13 @@
-import { HistoricalEvent, WikipediaEvent, DataSourceConfig } from '@/types/HistoricalEvent';
-import { WikipediaService } from './WikipediaService';
+import { HistoricalEvent, DataSourceConfig } from '@/types/HistoricalEvent';
 
 export class HistoryDataService {
   private static instance: HistoryDataService;
+  private baseUrl = '/api';
+  private cache = new Map<string, { data: HistoricalEvent[], timestamp: number }>();
+  private cacheExpiry = 5 * 60 * 1000; // 5 minutes for frontend cache
+  
   private dataSources: DataSourceConfig[] = [
-    { name: 'Wikipedia', enabled: true, priority: 1 },
-    { name: 'LocalData', enabled: true, priority: 2 }
+    { name: 'API', enabled: true, priority: 1 }
   ];
 
   // Demo data fallback
@@ -75,79 +77,109 @@ export class HistoryDataService {
   }
 
   async getHistoricalEvents(year: number): Promise<HistoricalEvent[]> {
-    const allEvents: HistoricalEvent[] = [];
-
-    // Get events from enabled data sources
-    for (const source of this.dataSources.filter(s => s.enabled)) {
-      try {
-        let sourceEvents: HistoricalEvent[] = [];
-
-        switch (source.name) {
-          case 'Wikipedia':
-            sourceEvents = await this.getWikipediaEvents(year);
-            break;
-          case 'LocalData':
-            sourceEvents = this.getDemoEvents(year);
-            break;
-        }
-
-        allEvents.push(...sourceEvents);
-      } catch (error) {
-        console.warn(`Failed to fetch events from ${source.name}:`, error);
-      }
+    const cacheKey = `events_${year}`;
+    
+    // Check cache first
+    const cached = this.cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < this.cacheExpiry) {
+      return cached.data;
     }
 
-    // Sort by date and remove duplicates
-    return this.deduplicateEvents(allEvents);
-  }
-
-  private async getWikipediaEvents(year: number): Promise<HistoricalEvent[]> {
     try {
-      const wikipediaEvents = await WikipediaService.searchHistoricalEvents(year, 20);
-      return wikipediaEvents
-        .filter(event => event.coordinates) // Only events with coordinates
-        .map(this.convertWikipediaEvent);
+      const response = await fetch(`${this.baseUrl}/events?year=${year}&limit=50`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && data.events) {
+        // Cache the results
+        this.cache.set(cacheKey, {
+          data: data.events,
+          timestamp: Date.now()
+        });
+        
+        return data.events;
+      } else {
+        throw new Error('Invalid response format');
+      }
     } catch (error) {
-      console.error('Error fetching Wikipedia events:', error);
-      return [];
+      console.error('Error fetching events from API:', error);
+      
+      // Fallback to demo data if API fails
+      return this.getFallbackEvents(year);
     }
   }
 
-  private getDemoEvents(year: number): HistoricalEvent[] {
-    return this.demoEvents.filter(event => {
+  private getFallbackEvents(year: number): HistoricalEvent[] {
+    // Fallback demo events when API is unavailable
+    const fallbackEvents = [
+      {
+        id: "fallback_moon_landing_1969",
+        title: "Apollo 11 Moon Landing",
+        date: "1969-07-20",
+        location: {
+          latitude: 28.6139,
+          longitude: -80.6081,
+          name: "Kennedy Space Center, Florida"
+        },
+        description: "The first manned moon landing mission (fallback data).",
+        category: "Science",
+        images: [],
+        wikipediaUrl: "https://en.wikipedia.org/wiki/Apollo_11",
+        sources: ["Fallback Data"],
+        verified: false
+      }
+    ];
+
+    return fallbackEvents.filter(event => {
       const eventYear = new Date(event.date).getFullYear();
       return eventYear <= year;
     });
   }
 
-  private convertWikipediaEvent(wikipediaEvent: WikipediaEvent): HistoricalEvent {
-    const id = `wiki_${wikipediaEvent.title.replace(/\s+/g, '_')}`;
-    
-    // Extract year from title or use current year as fallback
-    const yearMatch = wikipediaEvent.title.match(/\b(1[0-9]{3}|20[0-9]{2})\b/);
-    const year = yearMatch ? yearMatch[0] : new Date().getFullYear().toString();
-    
-    // Determine category based on title content
-    const category = this.determineCategory(wikipediaEvent.title, wikipediaEvent.extract);
+  async getEventById(id: string): Promise<HistoricalEvent | null> {
+    try {
+      const response = await fetch(`${this.baseUrl}/events/${id}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && data.event) {
+        return data.event;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error fetching event by ID:', error);
+      return null;
+    }
+  }
 
-    return {
-      id,
-      title: wikipediaEvent.title,
-      date: `${year}-01-01`, // Default to January 1st if specific date not available
-      location: {
-        latitude: wikipediaEvent.coordinates!.lat,
-        longitude: wikipediaEvent.coordinates!.lon,
-        name: wikipediaEvent.title
-      },
-      description: wikipediaEvent.extract.length > 300 
-        ? wikipediaEvent.extract.substring(0, 300) + '...'
-        : wikipediaEvent.extract,
-      category,
-      images: wikipediaEvent.thumbnail ? [wikipediaEvent.thumbnail.source] : [],
-      wikipediaUrl: wikipediaEvent.fullurl,
-      sources: ['Wikipedia'],
-      verified: true
-    };
+  async getCategories(): Promise<string[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/categories`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && data.categories) {
+        return data.categories;
+      }
+      
+      return [];
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      return ['Politics', 'War', 'Science', 'Culture', 'Technology'];
+    }
   }
 
   private determineCategory(title: string, extract: string): string {
@@ -189,24 +221,19 @@ export class HistoryDataService {
     return [...this.dataSources];
   }
 
-  async importCustomEvents(events: HistoricalEvent[]): Promise<void> {
-    const customKey = 'custom_historical_events';
-    try {
-      localStorage.setItem(customKey, JSON.stringify(events));
-    } catch (error) {
-      console.error('Failed to import custom events:', error);
-      throw new Error('Failed to save custom events');
-    }
+  // Clear cache to force refresh
+  clearCache(): void {
+    this.cache.clear();
   }
 
-  getCustomEvents(): HistoricalEvent[] {
-    const customKey = 'custom_historical_events';
+  // Check API health
+  async checkApiHealth(): Promise<boolean> {
     try {
-      const stored = localStorage.getItem(customKey);
-      return stored ? JSON.parse(stored) : [];
+      const response = await fetch(`${this.baseUrl.replace('/api', '')}/health`);
+      return response.ok;
     } catch (error) {
-      console.error('Failed to load custom events:', error);
-      return [];
+      console.error('API health check failed:', error);
+      return false;
     }
   }
 }

@@ -21,6 +21,7 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
   const [hasApiKey, setHasApiKey] = useState<boolean>(false);
   const [events, setEvents] = useState<HistoricalEvent[]>([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const historyService = HistoryDataService.getInstance();
 
@@ -90,14 +91,17 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
 
     const loadEvents = async () => {
       setIsLoadingEvents(true);
+      setError(null);
+      
       try {
         const historicalEvents = await historyService.getHistoricalEvents(selectedYear);
         setEvents(historicalEvents);
       } catch (error) {
         console.error('Error loading historical events:', error);
+        setError(error instanceof Error ? error.message : 'Failed to load events');
         toast({
           title: "Error Loading Events",
-          description: "Failed to load historical events. Using demo data.",
+          description: "Failed to load historical events from API. Using fallback data.",
           variant: "destructive",
         });
       } finally {
@@ -190,6 +194,24 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
     <div className="relative w-full h-screen">
       <div ref={mapContainer} className="absolute inset-0" />
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-background/10" />
+      
+      {/* Loading State */}
+      {isLoadingEvents && (
+        <div className="absolute inset-0 bg-background/50 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-sm text-muted-foreground">Loading historical events...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <div className="absolute top-4 left-4 right-4 bg-destructive/90 text-destructive-foreground p-4 rounded-lg">
+          <p className="font-medium">Error loading events</p>
+          <p className="text-sm opacity-90">{error}</p>
+        </div>
+      )}
     </div>
   );
 };
