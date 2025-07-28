@@ -1,17 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { HistoryDataService } from '@/services/HistoryDataService';
 import { HistoricalEvent } from '@/types/HistoricalEvent';
-
-// Fix Leaflet's default icon issue with Webpack
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-});
 
 interface MapProps {
   selectedYear: number;
@@ -20,50 +15,80 @@ interface MapProps {
 
 const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<L.Map | null>(null);
-  const markersRef = useRef<L.Marker[]>([]);
+  const map = useRef<mapboxgl.Map | null>(null);
+  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const [apiKey, setApiKey] = useState<string>('');
+  const [hasApiKey, setHasApiKey] = useState<boolean>(false);
   const [events, setEvents] = useState<HistoricalEvent[]>([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const historyService = HistoryDataService.getInstance();
 
-  // Create custom icon for historical events
-  const createHistoricalIcon = () => {
-    return L.divIcon({
-      className: 'historical-marker',
-      html: `
-        <div class="w-6 h-6 bg-historical-gold rounded-full border-2 border-background shadow-glow animate-glow cursor-pointer hover:scale-110 transition-transform duration-300">
-          <div class="w-full h-full bg-historical-gold rounded-full animate-float"></div>
-        </div>
-      `,
-      iconSize: [24, 24],
-      iconAnchor: [12, 12],
-    });
-  };
-
-  // Initialize map
+  // Check if user has Mapbox API key
   useEffect(() => {
-    if (!mapContainer.current || map.current) return;
-
-    map.current = L.map(mapContainer.current).setView([40, 20], 2);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      opacity: 0.9
-    }).addTo(map.current);
-
-    return () => {
-      if (map.current) {
-        map.current.remove();
-        map.current = null;
-      }
-    };
+    const savedKey = localStorage.getItem('mapbox_api_key');
+    if (savedKey) {
+      setApiKey(savedKey);
+      setHasApiKey(true);
+    }
   }, []);
 
+  const saveApiKey = () => {
+    if (apiKey.trim()) {
+      localStorage.setItem('mapbox_api_key', apiKey.trim());
+      setHasApiKey(true);
+      toast({
+        title: "API Key Saved",
+        description: "Mapbox API key saved successfully. Initializing map...",
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!mapContainer.current || !hasApiKey) return;
+
+    // Initialize map
+    mapboxgl.accessToken = localStorage.getItem('mapbox_api_key') || '';
+    
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/dark-v11',
+      projection: 'globe' as any,
+      zoom: 2,
+      center: [20, 40],
+      pitch: 0,
+    });
+
+    // Add navigation controls
+    map.current.addControl(
+      new mapboxgl.NavigationControl({
+        visualizePitch: true,
+      }),
+      'top-right'
+    );
+
+    // Add atmosphere and fog effects
+    map.current.on('style.load', () => {
+      map.current?.setFog({
+        color: 'hsl(210, 30%, 8%)',
+        'high-color': 'hsl(195, 25%, 15%)',
+        'horizon-blend': 0.1,
+      });
+    });
+
+    // Cleanup
+    return () => {
+      markersRef.current.forEach(marker => marker.remove());
+      markersRef.current = [];
+      map.current?.remove();
+    };
+  }, [hasApiKey]);
 
   // Load historical events for the selected year
   useEffect(() => {
+    if (!hasApiKey) return;
+
     const loadEvents = async () => {
       setIsLoadingEvents(true);
       setError(null);
@@ -85,44 +110,85 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
     };
 
     loadEvents();
-  }, [selectedYear, historyService, toast]);
+  }, [selectedYear, hasApiKey, historyService, toast]);
 
-  // Filter events by exact year match for better synchronization
-  const filteredEvents = events.filter(event => {
-    const eventYear = new Date(event.date).getFullYear();
-    return eventYear === selectedYear;
-  });
-
-  // Update markers when events or selected year changes
+  // Update markers based on loaded events
   useEffect(() => {
-    if (!map.current) return;
+    if (!map.current || !hasApiKey) return;
 
     // Clear existing markers
     markersRef.current.forEach(marker => marker.remove());
     markersRef.current = [];
 
+    // Filter events by year
+    const filteredEvents = events.filter(event => {
+      const eventYear = new Date(event.date).getFullYear();
+      return eventYear <= selectedYear;
+    });
+
     // Add markers for filtered events
     filteredEvents.forEach(event => {
-      const marker = L.marker([event.location.latitude, event.location.longitude], {
-        icon: createHistoricalIcon()
-      }).addTo(map.current!);
-
-      marker.bindPopup(`
-        <div class="p-2">
-          <h3 class="font-semibold text-sm">${event.title}</h3>
-          <p class="text-xs text-gray-600">${new Date(event.date).getFullYear()}</p>
-          <p class="text-xs mt-1">${event.location.name}</p>
+      // Create custom marker element
+      const markerElement = document.createElement('div');
+      markerElement.className = 'historical-marker';
+      markerElement.innerHTML = `
+        <div class="w-6 h-6 bg-historical-gold rounded-full border-2 border-background shadow-glow animate-glow cursor-pointer hover:scale-110 transition-transform duration-300">
+          <div class="w-full h-full bg-historical-gold rounded-full animate-float"></div>
         </div>
-      `);
+      `;
 
-      marker.on('click', () => {
+      const marker = new mapboxgl.Marker(markerElement)
+        .setLngLat([event.location.longitude, event.location.latitude])
+        .addTo(map.current!);
+
+      // Add click event
+      markerElement.addEventListener('click', () => {
         onEventSelect(event);
       });
 
       markersRef.current.push(marker);
     });
-  }, [filteredEvents, onEventSelect, createHistoricalIcon]);
+  }, [events, selectedYear, hasApiKey, onEventSelect]);
 
+  if (!hasApiKey) {
+    return (
+      <div className="relative w-full h-screen bg-gradient-ocean flex items-center justify-center">
+        <Card className="p-8 max-w-md w-full mx-4 bg-card/95 backdrop-blur-sm border-border/50">
+          <div className="text-center space-y-4">
+            <h2 className="text-2xl font-bold text-foreground">Connect to Mapbox</h2>
+            <p className="text-muted-foreground">
+              To display the interactive historical map, please enter your Mapbox public token. 
+              You can find it at{' '}
+              <a 
+                href="https://mapbox.com/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-accent hover:underline"
+              >
+                mapbox.com
+              </a>
+            </p>
+            <div className="space-y-3">
+              <Input
+                type="text"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="Enter your Mapbox public token"
+                className="transition-all duration-300 focus:ring-2 focus:ring-accent/50"
+              />
+              <Button 
+                onClick={saveApiKey}
+                disabled={!apiKey.trim()}
+                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+              >
+                Connect Map
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full h-screen">
@@ -131,28 +197,21 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
       
       {/* Loading State */}
       {isLoadingEvents && (
-        <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-50">
+        <div className="absolute inset-0 bg-background/50 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-sm text-muted-foreground">Loading historical events for {selectedYear}...</p>
+            <p className="text-sm text-muted-foreground">Loading historical events...</p>
           </div>
         </div>
       )}
 
       {/* Error State */}
       {error && (
-        <div className="absolute top-4 left-4 right-4 bg-destructive/90 text-destructive-foreground p-4 rounded-lg z-50">
+        <div className="absolute top-4 left-4 right-4 bg-destructive/90 text-destructive-foreground p-4 rounded-lg">
           <p className="font-medium">Error loading events</p>
           <p className="text-sm opacity-90">{error}</p>
         </div>
       )}
-
-      {/* Events Counter */}
-      <div className="absolute top-4 right-4 bg-card/95 backdrop-blur-sm border border-border/50 rounded-lg p-3 z-40">
-        <p className="text-sm font-medium text-foreground">
-          {filteredEvents.length} events in {selectedYear}
-        </p>
-      </div>
     </div>
   );
 };

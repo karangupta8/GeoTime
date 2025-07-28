@@ -85,24 +85,58 @@ export class HistoryDataService {
       return cached.data;
     }
 
-    // Use demo data directly since API is having issues
-    console.log('Using demo data for historical events');
-    const fallbackData = this.getFallbackEvents(year);
-    
-    // Cache the fallback data
-    this.cache.set(cacheKey, {
-      data: fallbackData,
-      timestamp: Date.now()
-    });
-    
-    return fallbackData;
+    try {
+      const response = await fetch(`${this.baseUrl}/events?year=${year}&limit=50`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && data.events) {
+        // Cache the results
+        this.cache.set(cacheKey, {
+          data: data.events,
+          timestamp: Date.now()
+        });
+        
+        return data.events;
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (error) {
+      console.error('Error fetching events from API:', error);
+      
+      // Fallback to demo data if API fails
+      return this.getFallbackEvents(year);
+    }
   }
 
   private getFallbackEvents(year: number): HistoricalEvent[] {
-    // Use the demo events from the class property
-    return this.demoEvents.filter(event => {
+    // Fallback demo events when API is unavailable
+    const fallbackEvents = [
+      {
+        id: "fallback_moon_landing_1969",
+        title: "Apollo 11 Moon Landing",
+        date: "1969-07-20",
+        location: {
+          latitude: 28.6139,
+          longitude: -80.6081,
+          name: "Kennedy Space Center, Florida"
+        },
+        description: "The first manned moon landing mission (fallback data).",
+        category: "Science",
+        images: [],
+        wikipediaUrl: "https://en.wikipedia.org/wiki/Apollo_11",
+        sources: ["Fallback Data"],
+        verified: false
+      }
+    ];
+
+    return fallbackEvents.filter(event => {
       const eventYear = new Date(event.date).getFullYear();
-      return eventYear === year; // Changed to exact year match for better sync
+      return eventYear <= year;
     });
   }
 
