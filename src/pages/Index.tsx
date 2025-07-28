@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Map from '@/components/Map';
+import MapWithClustering from '@/components/MapClustering';
 import TimelineSlider from '@/components/TimelineSlider';
 import EventPopup from '@/components/EventPopup';
 import Header from '@/components/Header';
@@ -49,7 +49,7 @@ const Index = () => {
       
       {/* Map Container */}
       <div className="relative w-full h-screen">
-        <Map 
+        <MapWithClustering 
           selectedYear={selectedYear} 
           onEventSelect={handleEventSelect}
           key={dataSourceVersion} // Force re-render when data sources change

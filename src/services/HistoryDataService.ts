@@ -79,22 +79,28 @@ export class HistoryDataService {
   async getHistoricalEvents(year: number): Promise<HistoricalEvent[]> {
     const cacheKey = `events_${year}`;
     
-    // Clear cache for this year to ensure fresh data
-    this.cache.delete(cacheKey);
-    
+    // Check cache first
+    const cached = this.cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < this.cacheExpiry) {
+      console.log(`Returning cached events for year ${year}: ${cached.data.length} events`);
+      return cached.data;
+    }
+
     try {
-      console.log(`Fetching events for year ${year}`);
+      console.log(`Fetching events for year ${year} from API: ${this.baseUrl}/events?year=${year}&limit=50`);
       const response = await fetch(`${this.baseUrl}/events?year=${year}&limit=50`);
       
       if (!response.ok) {
-        console.error(`API request failed with status ${response.status}`);
+        console.error(`API request failed with status ${response.status}: ${response.statusText}`);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       const data = await response.json();
-      console.log(`Received ${data.events?.length || 0} events from API for year ${year}`);
+      console.log(`API Response for year ${year}:`, data);
       
       if (data.success && data.events) {
+        console.log(`Successfully received ${data.events.length} events from API for year ${year}`);
+        
         // Cache the results
         this.cache.set(cacheKey, {
           data: data.events,
@@ -102,14 +108,23 @@ export class HistoryDataService {
         });
         
         return data.events;
-      } else {
-        throw new Error('Invalid response format');
       }
+      
+      throw new Error('Invalid response format');
     } catch (error) {
       console.error('Error fetching events from API:', error);
       
-      // Fallback to demo data if API fails
-      return this.getFallbackEvents(year);
+      // Return fallback data
+      const fallbackEvents = this.getFallbackEvents(year);
+      console.log(`Using fallback data for year ${year}: ${fallbackEvents.length} events`);
+      
+      // Cache fallback data with shorter expiry
+      this.cache.set(cacheKey, {
+        data: fallbackEvents,
+        timestamp: Date.now()
+      });
+      
+      return fallbackEvents;
     }
   }
 

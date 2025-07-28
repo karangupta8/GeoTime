@@ -40,4 +40,6 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`GeoTime API server running on port ${PORT}`);
+  console.log(`Server health check available at http://localhost:${PORT}/health`);
+  console.log(`API endpoints available at http://localhost:${PORT}/api`);
 });

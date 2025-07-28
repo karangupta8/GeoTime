@@ -9,11 +9,25 @@ const demoEventsPath = join(__dirname, '../data/demoEvents.json');
 
 let demoEvents = [];
 try {
+  console.log(`Attempting to load demo events from: ${demoEventsPath}`);
   const jsonData = readFileSync(demoEventsPath, 'utf8');
   demoEvents = JSON.parse(jsonData);
-  console.log(`Loaded ${demoEvents.length} demo events from JSON file`);
+  console.log(`✅ Successfully loaded ${demoEvents.length} demo events from JSON file`);
+  
+  // Log sample of events for verification
+  if (demoEvents.length > 0) {
+    const sampleEvents = demoEvents.slice(0, 3).map(e => ({
+      id: e.id,
+      title: e.title,
+      date: e.date,
+      year: new Date(e.date).getFullYear()
+    }));
+    console.log('Sample events:', sampleEvents);
+  }
 } catch (error) {
-  console.error('Error loading demo events:', error);
+  console.error('❌ Error loading demo events:', error);
+  console.error('File path:', demoEventsPath);
+  console.error('Current working directory:', process.cwd());
   demoEvents = [];
 }
 
