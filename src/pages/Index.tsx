@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Map from '@/components/Map';
 import TimelineSlider from '@/components/TimelineSlider';
 import EventPopup from '@/components/EventPopup';
 import Header from '@/components/Header';
 import DataSourcePanel from '@/components/DataSourcePanel';
+import { HistoryDataService } from '@/services/HistoryDataService';
 
 const Index = () => {
   const [selectedYear, setSelectedYear] = useState<number>(1969);
@@ -11,6 +12,8 @@ const Index = () => {
   const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
   const [isDataSourcePanelOpen, setIsDataSourcePanelOpen] = useState<boolean>(false);
   const [dataSourceVersion, setDataSourceVersion] = useState<number>(0);
+  const [eventCount, setEventCount] = useState<number>(0);
+  const historyService = HistoryDataService.getInstance();
 
   const handleEventSelect = (event: any) => {
     setSelectedEvent(event);
@@ -20,6 +23,21 @@ const Index = () => {
   const handleYearChange = (year: number) => {
     setSelectedYear(year);
   };
+
+  // Load event count for the selected year
+  useEffect(() => {
+    const loadEventCount = async () => {
+      try {
+        const events = await historyService.getHistoricalEvents(selectedYear);
+        setEventCount(events.length);
+      } catch (error) {
+        console.error('Error loading event count:', error);
+        setEventCount(0);
+      }
+    };
+
+    loadEventCount();
+  }, [selectedYear, historyService, dataSourceVersion]);
 
   const handleDataSourceChange = () => {
     setDataSourceVersion(prev => prev + 1);
@@ -42,6 +60,7 @@ const Index = () => {
           <TimelineSlider 
             selectedYear={selectedYear}
             onYearChange={handleYearChange}
+            eventCount={eventCount}
           />
         </div>
       </div>

@@ -1,5 +1,12 @@
 import WikipediaService from './WikipediaService.js';
-import demoEvents from '../data/demoEvents.js';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const demoEventsPath = join(__dirname, '../data/demoEvents.json');
+const demoEvents = JSON.parse(readFileSync(demoEventsPath, 'utf8'));
 
 class DataService {
   constructor() {
@@ -81,7 +88,7 @@ class DataService {
   getDemoEventsByYear(year) {
     return demoEvents.filter(event => {
       const eventYear = new Date(event.date).getFullYear();
-      return eventYear <= year;
+      return eventYear === year;
     });
   }
 

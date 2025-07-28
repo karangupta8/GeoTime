@@ -1,0 +1,629 @@
+[
+  {
+    "id": "magna_carta_1215",
+    "title": "Magna Carta Signed",
+    "date": "1215-06-15",
+    "location": {
+      "latitude": 51.4548,
+      "longitude": -0.5862,
+      "name": "Runnymede, England"
+    },
+    "description": "King John of England signed the Magna Carta, establishing the principle that everyone is subject to the law, including the king.",
+    "category": "Politics",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Magna_Carta",
+    "sources": ["Historical Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "printing_press_1440",
+    "title": "Gutenberg's Printing Press",
+    "date": "1440-01-01",
+    "location": {
+      "latitude": 50.0012,
+      "longitude": 8.2714,
+      "name": "Mainz, Germany"
+    },
+    "description": "Johannes Gutenberg invented the printing press with movable type, revolutionizing the spread of information.",
+    "category": "Technology",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Printing_press",
+    "sources": ["Historical Records", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "columbus_1492",
+    "title": "Columbus Reaches the Americas",
+    "date": "1492-10-12",
+    "location": {
+      "latitude": 24.0000,
+      "longitude": -74.5000,
+      "name": "Bahamas"
+    },
+    "description": "Christopher Columbus made his first landfall in the Americas, beginning European exploration of the New World.",
+    "category": "Discovery",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Voyages_of_Christopher_Columbus",
+    "sources": ["Historical Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "shakespeare_hamlet_1600",
+    "title": "Hamlet First Performance",
+    "date": "1600-01-01",
+    "location": {
+      "latitude": 51.5074,
+      "longitude": -0.1278,
+      "name": "London, England"
+    },
+    "description": "William Shakespeare's tragedy Hamlet was first performed, becoming one of the greatest works in English literature.",
+    "category": "Culture",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Hamlet",
+    "sources": ["Literary Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "telescope_1608",
+    "title": "First Telescope Invented",
+    "date": "1608-01-01",
+    "location": {
+      "latitude": 52.3676,
+      "longitude": 4.9041,
+      "name": "Netherlands"
+    },
+    "description": "Hans Lippershey created the first practical telescope, revolutionizing astronomy and navigation.",
+    "category": "Science",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Telescope",
+    "sources": ["Scientific Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "boston_tea_party_1773",
+    "title": "Boston Tea Party",
+    "date": "1773-12-16",
+    "location": {
+      "latitude": 42.3601,
+      "longitude": -71.0589,
+      "name": "Boston, Massachusetts"
+    },
+    "description": "American colonists dumped British tea into Boston Harbor in protest of taxation without representation.",
+    "category": "Politics",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Boston_Tea_Party",
+    "sources": ["Colonial Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "steam_engine_1769",
+    "title": "Watt's Steam Engine Patent",
+    "date": "1769-01-05",
+    "location": {
+      "latitude": 52.4862,
+      "longitude": -1.8904,
+      "name": "Birmingham, England"
+    },
+    "description": "James Watt patented his improved steam engine, sparking the Industrial Revolution.",
+    "category": "Technology",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Watt_steam_engine",
+    "sources": ["Patent Office", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "french_revolution_1789",
+    "title": "French Revolution Begins",
+    "date": "1789-07-14",
+    "location": {
+      "latitude": 48.8566,
+      "longitude": 2.3522,
+      "name": "Paris, France"
+    },
+    "description": "The storming of the Bastille marked the beginning of the French Revolution.",
+    "category": "Politics",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/French_Revolution",
+    "sources": ["French Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "napoleon_waterloo_1815",
+    "title": "Battle of Waterloo",
+    "date": "1815-06-18",
+    "location": {
+      "latitude": 50.6800,
+      "longitude": 4.4114,
+      "name": "Waterloo, Belgium"
+    },
+    "description": "Napoleon Bonaparte was defeated at Waterloo, ending his rule and the Napoleonic Wars.",
+    "category": "War",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Battle_of_Waterloo",
+    "sources": ["Military Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "photography_1839",
+    "title": "Photography Invented",
+    "date": "1839-01-09",
+    "location": {
+      "latitude": 48.8566,
+      "longitude": 2.3522,
+      "name": "Paris, France"
+    },
+    "description": "Louis Daguerre announced the daguerreotype process, making photography available to the public.",
+    "category": "Technology",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Daguerreotype",
+    "sources": ["French Academy", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "telegraph_1844",
+    "title": "First Telegraph Message",
+    "date": "1844-05-24",
+    "location": {
+      "latitude": 38.9072,
+      "longitude": -77.0369,
+      "name": "Washington, D.C."
+    },
+    "description": "Samuel Morse sent the first long-distance telegraph message: 'What hath God wrought'.",
+    "category": "Technology",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Electrical_telegraph",
+    "sources": ["Telegraph Company", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "civil_war_1861",
+    "title": "American Civil War Begins",
+    "date": "1861-04-12",
+    "location": {
+      "latitude": 32.7765,
+      "longitude": -79.9311,
+      "name": "Fort Sumter, South Carolina"
+    },
+    "description": "Confederate forces fired on Fort Sumter, beginning the American Civil War.",
+    "category": "War",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/American_Civil_War",
+    "sources": ["Military Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "telephone_1876",
+    "title": "First Telephone Call",
+    "date": "1876-03-10",
+    "location": {
+      "latitude": 42.3601,
+      "longitude": -71.0589,
+      "name": "Boston, Massachusetts"
+    },
+    "description": "Alexander Graham Bell made the first successful telephone call to his assistant.",
+    "category": "Technology",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Telephone",
+    "sources": ["Bell Laboratory", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "light_bulb_1879",
+    "title": "Edison's Light Bulb",
+    "date": "1879-10-21",
+    "location": {
+      "latitude": 40.5581,
+      "longitude": -74.3436,
+      "name": "Menlo Park, New Jersey"
+    },
+    "description": "Thomas Edison successfully tested his incandescent light bulb, lighting up the modern world.",
+    "category": "Technology",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Incandescent_light_bulb",
+    "sources": ["Edison Laboratory", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "airplane_1903",
+    "title": "First Powered Flight",
+    "date": "1903-12-17",
+    "location": {
+      "latitude": 36.0175,
+      "longitude": -75.6684,
+      "name": "Kitty Hawk, North Carolina"
+    },
+    "description": "The Wright brothers achieved the first powered, sustained, and controlled heavier-than-air human flight.",
+    "category": "Technology",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Wright_Flyer",
+    "sources": ["Wright Brothers", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "einstein_relativity_1905",
+    "title": "Einstein's Theory of Relativity",
+    "date": "1905-09-27",
+    "location": {
+      "latitude": 46.9481,
+      "longitude": 7.4474,
+      "name": "Bern, Switzerland"
+    },
+    "description": "Albert Einstein published his special theory of relativity, revolutionizing physics.",
+    "category": "Science",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Special_relativity",
+    "sources": ["Physics Journals", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "titanic_1912",
+    "title": "Titanic Sinks",
+    "date": "1912-04-15",
+    "location": {
+      "latitude": 41.7325,
+      "longitude": -49.9469,
+      "name": "North Atlantic Ocean"
+    },
+    "description": "The RMS Titanic sank on its maiden voyage after hitting an iceberg, killing over 1,500 people.",
+    "category": "Disaster",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Sinking_of_the_Titanic",
+    "sources": ["Maritime Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "wwi_1914",
+    "title": "World War I Begins",
+    "date": "1914-07-28",
+    "location": {
+      "latitude": 44.8125,
+      "longitude": 20.4612,
+      "name": "Belgrade, Serbia"
+    },
+    "description": "Austria-Hungary declared war on Serbia, beginning World War I.",
+    "category": "War",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/World_War_I",
+    "sources": ["Military Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "penicillin_1928",
+    "title": "Discovery of Penicillin",
+    "date": "1928-09-28",
+    "location": {
+      "latitude": 51.5074,
+      "longitude": -0.1278,
+      "name": "London, England"
+    },
+    "description": "Alexander Fleming discovered penicillin, revolutionizing medicine and saving millions of lives.",
+    "category": "Science",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Penicillin",
+    "sources": ["Medical Journals", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "stock_crash_1929",
+    "title": "Stock Market Crash",
+    "date": "1929-10-29",
+    "location": {
+      "latitude": 40.7128,
+      "longitude": -74.0060,
+      "name": "New York City, New York"
+    },
+    "description": "Black Tuesday marked the beginning of the Great Depression.",
+    "category": "Economics",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Wall_Street_Crash_of_1929",
+    "sources": ["Financial Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "wwii_1939",
+    "title": "World War II Begins",
+    "date": "1939-09-01",
+    "location": {
+      "latitude": 52.2297,
+      "longitude": 21.0122,
+      "name": "Warsaw, Poland"
+    },
+    "description": "Germany invaded Poland, beginning World War II in Europe.",
+    "category": "War",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/World_War_II",
+    "sources": ["Military Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "dna_1953",
+    "title": "DNA Structure Discovered",
+    "date": "1953-04-25",
+    "location": {
+      "latitude": 52.2053,
+      "longitude": 0.1218,
+      "name": "Cambridge, England"
+    },
+    "description": "Watson and Crick published the double helix structure of DNA.",
+    "category": "Science",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/DNA",
+    "sources": ["Nature Journal", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "berlin_wall_1961",
+    "title": "Construction of Berlin Wall",
+    "date": "1961-08-13",
+    "location": {
+      "latitude": 52.5200,
+      "longitude": 13.4050,
+      "name": "Berlin, Germany"
+    },
+    "description": "East German authorities began construction of the Berlin Wall, dividing East and West Berlin during the Cold War.",
+    "category": "Politics",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Berlin_Wall",
+    "sources": ["Historical Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "cuban_missile_crisis_1962",
+    "title": "Cuban Missile Crisis",
+    "date": "1962-10-14",
+    "endDate": "1962-10-28",
+    "location": {
+      "latitude": 21.5218,
+      "longitude": -77.7812,
+      "name": "Cuba"
+    },
+    "description": "A 13-day political and military standoff between the United States and Soviet Union over nuclear missiles in Cuba.",
+    "category": "Politics",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Cuban_Missile_Crisis",
+    "sources": ["CIA Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "jfk_assassination_1963",
+    "title": "Assassination of John F. Kennedy",
+    "date": "1963-11-22",
+    "location": {
+      "latitude": 32.7767,
+      "longitude": -96.7970,
+      "name": "Dallas, Texas"
+    },
+    "description": "The 35th President of the United States was assassinated while riding in a presidential motorcade in Dallas.",
+    "category": "Politics",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Assassination_of_John_F._Kennedy",
+    "sources": ["Warren Commission", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "beatles_ed_sullivan_1964",
+    "title": "The Beatles on The Ed Sullivan Show",
+    "date": "1964-02-09",
+    "location": {
+      "latitude": 40.7589,
+      "longitude": -73.9851,
+      "name": "New York City, New York"
+    },
+    "description": "The Beatles made their American television debut, sparking Beatlemania across the United States.",
+    "category": "Culture",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/The_Beatles_on_The_Ed_Sullivan_Show",
+    "sources": ["CBS Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "first_computer_mouse_1964",
+    "title": "First Computer Mouse Demonstration",
+    "date": "1964-01-01",
+    "location": {
+      "latitude": 37.4419,
+      "longitude": -122.1430,
+      "name": "Stanford Research Institute, California"
+    },
+    "description": "Douglas Engelbart demonstrated the first computer mouse, revolutionizing human-computer interaction.",
+    "category": "Technology",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Computer_mouse",
+    "sources": ["Stanford Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "selma_marches_1965",
+    "title": "Selma to Montgomery Marches",
+    "date": "1965-03-07",
+    "endDate": "1965-03-25",
+    "location": {
+      "latitude": 32.4074,
+      "longitude": -87.0211,
+      "name": "Selma, Alabama"
+    },
+    "description": "A series of civil rights marches led by Martin Luther King Jr. for African American voting rights.",
+    "category": "Politics",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Selma_to_Montgomery_marches",
+    "sources": ["Civil Rights Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "world_cup_1966",
+    "title": "1966 FIFA World Cup Final",
+    "date": "1966-07-30",
+    "location": {
+      "latitude": 51.5074,
+      "longitude": -0.1278,
+      "name": "Wembley Stadium, London"
+    },
+    "description": "England defeated West Germany 4-2 to win their first and only FIFA World Cup.",
+    "category": "Sports",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/1966_FIFA_World_Cup_Final",
+    "sources": ["FIFA", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "moon_landing_1969",
+    "title": "Apollo 11 Moon Landing",
+    "date": "1969-07-20",
+    "location": {
+      "latitude": 28.6139,
+      "longitude": -80.6081,
+      "name": "Kennedy Space Center, Florida"
+    },
+    "description": "The first manned moon landing mission, with Neil Armstrong and Buzz Aldrin becoming the first humans to walk on the lunar surface.",
+    "category": "Science",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Apollo_11",
+    "sources": ["NASA", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "woodstock_1969",
+    "title": "Woodstock Music Festival",
+    "date": "1969-08-15",
+    "endDate": "1969-08-18",
+    "location": {
+      "latitude": 41.7014,
+      "longitude": -74.3535,
+      "name": "Bethel, New York"
+    },
+    "description": "A pivotal moment in music history, featuring performances by Jimi Hendrix, Janis Joplin, and many other legendary artists.",
+    "category": "Culture",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Woodstock",
+    "sources": ["Historical Records", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "internet_arpanet_1969",
+    "title": "First ARPANET Connection",
+    "date": "1969-10-29",
+    "location": {
+      "latitude": 34.0522,
+      "longitude": -118.2437,
+      "name": "UCLA, Los Angeles"
+    },
+    "description": "The first host-to-host message sent over ARPANET, the precursor to the modern internet.",
+    "category": "Technology",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/ARPANET",
+    "sources": ["UCLA", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "personal_computer_1981",
+    "title": "IBM Personal Computer Released",
+    "date": "1981-08-12",
+    "location": {
+      "latitude": 41.5868,
+      "longitude": -73.8370,
+      "name": "Armonk, New York"
+    },
+    "description": "IBM released the IBM PC, standardizing personal computers and making them accessible to consumers.",
+    "category": "Technology",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/IBM_Personal_Computer",
+    "sources": ["IBM Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "berlin_wall_fall_1989",
+    "title": "Fall of the Berlin Wall",
+    "date": "1989-11-09",
+    "location": {
+      "latitude": 52.5200,
+      "longitude": 13.4050,
+      "name": "Berlin, Germany"
+    },
+    "description": "The Berlin Wall was torn down, symbolizing the end of the Cold War and German reunification.",
+    "category": "Politics",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Fall_of_the_Berlin_Wall",
+    "sources": ["Historical Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "world_wide_web_1991",
+    "title": "World Wide Web Goes Public",
+    "date": "1991-08-06",
+    "location": {
+      "latitude": 46.2326,
+      "longitude": 6.0551,
+      "name": "CERN, Geneva"
+    },
+    "description": "Tim Berners-Lee made the World Wide Web available to the public, revolutionizing information sharing.",
+    "category": "Technology",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/World_Wide_Web",
+    "sources": ["CERN", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "september_11_2001",
+    "title": "September 11 Attacks",
+    "date": "2001-09-11",
+    "location": {
+      "latitude": 40.7128,
+      "longitude": -74.0060,
+      "name": "New York City, New York"
+    },
+    "description": "Terrorist attacks on the World Trade Center and Pentagon changed the course of American foreign policy.",
+    "category": "Politics",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/September_11_attacks",
+    "sources": ["Government Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "facebook_2004",
+    "title": "Facebook Founded",
+    "date": "2004-02-04",
+    "location": {
+      "latitude": 42.3736,
+      "longitude": -71.1097,
+      "name": "Cambridge, Massachusetts"
+    },
+    "description": "Mark Zuckerberg founded Facebook, beginning the era of social media.",
+    "category": "Technology",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Facebook",
+    "sources": ["Company Records", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "financial_crisis_2008",
+    "title": "Global Financial Crisis",
+    "date": "2008-09-15",
+    "location": {
+      "latitude": 40.7128,
+      "longitude": -74.0060,
+      "name": "New York City, New York"
+    },
+    "description": "The collapse of Lehman Brothers triggered the worst financial crisis since the Great Depression.",
+    "category": "Economics",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Financial_crisis_of_2007%E2%80%932008",
+    "sources": ["Financial Records", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "covid_pandemic_2020",
+    "title": "COVID-19 Pandemic Declared",
+    "date": "2020-03-11",
+    "location": {
+      "latitude": 46.2326,
+      "longitude": 6.0551,
+      "name": "Geneva, Switzerland"
+    },
+    "description": "WHO declared COVID-19 a pandemic, leading to global lockdowns and economic disruption.",
+    "category": "Disaster",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/COVID-19_pandemic",
+    "sources": ["WHO", "Demo Data"],
+    "verified": true
+  }
+]
