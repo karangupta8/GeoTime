@@ -6,13 +6,22 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const demoEventsPath = join(__dirname, '../data/demoEvents.json');
-const demoEvents = JSON.parse(readFileSync(demoEventsPath, 'utf8'));
+
+let demoEvents = [];
+try {
+  const jsonData = readFileSync(demoEventsPath, 'utf8');
+  demoEvents = JSON.parse(jsonData);
+  console.log(`Loaded ${demoEvents.length} demo events from JSON file`);
+} catch (error) {
+  console.error('Error loading demo events:', error);
+  demoEvents = [];
+}
 
 class DataService {
   constructor() {
     this.wikipediaService = new WikipediaService();
     this.cache = new Map();
-    this.cacheExpiry = 24 * 60 * 60 * 1000; // 24 hours
+    this.cacheExpiry = 5 * 60 * 1000; // 5 minutes for testing
   }
 
   async getHistoricalEvents(year, options = {}) {
@@ -86,10 +95,12 @@ class DataService {
   }
 
   getDemoEventsByYear(year) {
-    return demoEvents.filter(event => {
+    const filteredEvents = demoEvents.filter(event => {
       const eventYear = new Date(event.date).getFullYear();
       return eventYear === year;
     });
+    console.log(`Found ${filteredEvents.length} demo events for year ${year}`);
+    return filteredEvents;
   }
 
   deduplicateEvents(events) {

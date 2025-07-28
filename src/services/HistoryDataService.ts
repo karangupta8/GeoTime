@@ -79,20 +79,20 @@ export class HistoryDataService {
   async getHistoricalEvents(year: number): Promise<HistoricalEvent[]> {
     const cacheKey = `events_${year}`;
     
-    // Check cache first
-    const cached = this.cache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < this.cacheExpiry) {
-      return cached.data;
-    }
-
+    // Clear cache for this year to ensure fresh data
+    this.cache.delete(cacheKey);
+    
     try {
+      console.log(`Fetching events for year ${year}`);
       const response = await fetch(`${this.baseUrl}/events?year=${year}&limit=50`);
       
       if (!response.ok) {
+        console.error(`API request failed with status ${response.status}`);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
       const data = await response.json();
+      console.log(`Received ${data.events?.length || 0} events from API for year ${year}`);
       
       if (data.success && data.events) {
         // Cache the results
@@ -136,7 +136,7 @@ export class HistoryDataService {
 
     return fallbackEvents.filter(event => {
       const eventYear = new Date(event.date).getFullYear();
-      return eventYear <= year;
+      return eventYear === year;
     });
   }
 
