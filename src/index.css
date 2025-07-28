@@ -136,3 +136,84 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* Historical marker animations */
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 10px hsl(var(--historical-gold) / 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px hsl(var(--historical-gold) / 0.8);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Leaflet popup customization */
+.leaflet-popup-content-wrapper {
+  background-color: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+}
+
+.leaflet-popup-tip {
+  background-color: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+}
+
+.historical-marker {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 50%;
+}
+
+/* Custom utilities */
+@layer utilities {
+  .bg-gradient-ocean {
+    background: var(--gradient-ocean);
+  }
+  
+  .bg-gradient-gold {
+    background: var(--gradient-gold);
+  }
+  
+  .shadow-elegant {
+    box-shadow: var(--shadow-elegant);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+  
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  .bg-historical-gold {
+    background-color: hsl(var(--historical-gold));
+  }
+  
+  .text-historical-gold {
+    color: hsl(var(--historical-gold));
+  }
+  
+  .border-historical-gold {
+    border-color: hsl(var(--historical-gold));
+  }
+}
