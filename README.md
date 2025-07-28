@@ -37,7 +37,9 @@
 
 ## 🎥 Demo
 
-Include a **screenshot, GIF, or a short video** here to visually demonstrate the project's functionality and user interface.
+![GeoTime Demo](./readme_assets/demo.png)
+
+![Event Popup](./readme_assets/popup.png)
 
 ## 🚀 Future Roadmap and Potential Features
 
@@ -119,7 +121,7 @@ Visit [http://localhost:8080](http://localhost:8080) and enter your Mapbox API k
 ### **How this Web App Differs**
 
 * Combines **Wikipedia/Wikidata parsing** for events with **geo-temporal mapping**
-* Focuses on **micro-level events**, not just macro historical changes
+* Focuses on **macro-level events**, not just history groups (For Eg. The French Revolution)
 * Prioritizes a **modern UX/UI with interactive storytelling**
 
 ## 🧑‍🎓 Target Users & Use Cases
