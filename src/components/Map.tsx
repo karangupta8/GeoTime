@@ -120,10 +120,10 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
     markersRef.current.forEach(marker => marker.remove());
     markersRef.current = [];
 
-    // Filter events by year
+    // Filter events by exact year match
     const filteredEvents = events.filter(event => {
       const eventYear = new Date(event.date).getFullYear();
-      return eventYear <= selectedYear;
+      return eventYear === selectedYear;
     });
 
     // Add markers for filtered events
