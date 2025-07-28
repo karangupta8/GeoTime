@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useToast } from '@/hooks/use-toast';
@@ -20,6 +19,9 @@ interface MapProps {
 }
 
 const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<L.Map | null>(null);
+  const markersRef = useRef<L.Marker[]>([]);
   const [events, setEvents] = useState<HistoricalEvent[]>([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +41,25 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
       iconAnchor: [12, 12],
     });
   };
+
+  // Initialize map
+  useEffect(() => {
+    if (!mapContainer.current || map.current) return;
+
+    map.current = L.map(mapContainer.current).setView([40, 20], 2);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      opacity: 0.9
+    }).addTo(map.current);
+
+    return () => {
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
+    };
+  }, []);
 
 
   // Load historical events for the selected year
@@ -72,41 +93,40 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
     return eventYear === selectedYear;
   });
 
+  // Update markers when events or selected year changes
+  useEffect(() => {
+    if (!map.current) return;
+
+    // Clear existing markers
+    markersRef.current.forEach(marker => marker.remove());
+    markersRef.current = [];
+
+    // Add markers for filtered events
+    filteredEvents.forEach(event => {
+      const marker = L.marker([event.location.latitude, event.location.longitude], {
+        icon: createHistoricalIcon()
+      }).addTo(map.current!);
+
+      marker.bindPopup(`
+        <div class="p-2">
+          <h3 class="font-semibold text-sm">${event.title}</h3>
+          <p class="text-xs text-gray-600">${new Date(event.date).getFullYear()}</p>
+          <p class="text-xs mt-1">${event.location.name}</p>
+        </div>
+      `);
+
+      marker.on('click', () => {
+        onEventSelect(event);
+      });
+
+      markersRef.current.push(marker);
+    });
+  }, [filteredEvents, onEventSelect, createHistoricalIcon]);
+
 
   return (
     <div className="relative w-full h-screen">
-      <MapContainer
-        center={[40, 20]}
-        zoom={2}
-        style={{ height: '100%', width: '100%' }}
-        className="relative z-0"
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          className="opacity-90"
-        />
-        
-        {filteredEvents.map((event) => (
-          <Marker
-            key={event.id}
-            position={[event.location.latitude, event.location.longitude]}
-            icon={createHistoricalIcon()}
-            eventHandlers={{
-              click: () => onEventSelect(event),
-            }}
-          >
-            <Popup className="historical-popup">
-              <div className="p-2">
-                <h3 className="font-semibold text-sm">{event.title}</h3>
-                <p className="text-xs text-muted-foreground">{new Date(event.date).getFullYear()}</p>
-                <p className="text-xs mt-1">{event.location.name}</p>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
-      </MapContainer>
-      
+      <div ref={mapContainer} className="absolute inset-0" />
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-background/10" />
       
       {/* Loading State */}
