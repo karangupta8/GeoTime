@@ -45,7 +45,7 @@
 
 * **LLM Generated Summary of Event in Side Panel** - Select an Event - Click on Generate Summary in Side Panel
 * **LLM “History” Query** - Natural‑language request: *“Show me some political historical events that happened in New York in 1886”* changes the Year filter, Category Filter (if available) and the globe position to destination
-* Add filters by **time range, region, or event category**
+* Add filters by **time range, region, or event category**. Add Color Code for categories
 * Near Real-time updates using Wikipedia API
 * **Day-level slider** for recent events (last 1 year)
 * Ability to **compare two dates/eras** side by side
