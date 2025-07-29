@@ -55,6 +55,7 @@ const Index = () => {
             selectedYear={selectedYear}
             onYearChange={handleYearChange}
             eventCount={eventCount}
+            onSettingsClick={() => setIsDataSourcePanelOpen(true)}
           />
         </div>
 
