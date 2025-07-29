@@ -43,6 +43,7 @@
 
 ## 🚀 Future Roadmap and Potential Features
 
+* Add an Events Fetching Data Pipeline
 * **LLM Generated Summary of Event in Side Panel** - Select an Event - Click on Generate Summary in Side Panel
 * **LLM “History” Query** - Natural‑language request: *“Show me some political historical events that happened in New York in 1886”* changes the Year filter, Category Filter (if available) and the globe position to destination
 * Add filters by **time range, region, or event category**. Add Color Code for categories
@@ -56,7 +57,7 @@
 
 ### **Initial Concept (7-8 years ago):**
 
-As someone deeply interested in **History**, and even more in **Anthropology,** which I see as the study of how history itself evolves across **time** and **geography,** I often found myself [falling into](https://histography.io/) Wikipedia rabbit holes when searching about a topic. So somewhere in the late 2010s, I had an [idea about t](http://wikiverse.io/) his website to visualize history on a world map, with time as a dimension. The goal was to have a view of historical events geo[graphically and ch](https://www.informationisbeautifulawards.com/showcase/1182-wikiverse) ronologically.
+As someone deeply interested in **History**, and even more in **Anthropology,** which I see as the study of how history itself evolves across **time** and **geography,** I often found myself falling into Wikipedia rabbit holes when searching about a topic. So somewhere in the late 2010s, I had an idea about this website to visualize history on a world map, with time as a dimension. The goal was to have a view of historical events geographically and chronologically.
 
 ### **Potential Inspiration Sources**
 
@@ -66,9 +67,9 @@ As someone deeply interested in **History**, and even more in **Anthropology,** 
   * More details: [Wikiverse Showcase](https://www.informationisbeautifulawards.com/showcase/1182-wikiverse).
   * [Modern equivalent: ](https://meta.wikimedia.org/wiki/Wikihistorymap)[anvaka/map-of-github](https://meta.wikimedia.org/wiki/Wikihistorymap)[.](https://meta.wikimedia.org/wiki/Wikihistorymap)
 
-### **Why I Couldn't Build It Then:**
+### **Why Couldn't it be Built Back Then:**
 
-I lacked full-stack web development skills at the time. However, with advancements in no-code tools like **Lovable**, the concept is now achievable.
+I lacked full-stack web development skills at the time. However, with advancements in no-code tools like **Lovable**, the idea was now executable for me.
 
 ### **Additional Sources Found Today:**
 
@@ -143,6 +144,7 @@ Visit [http://localhost:8080](http://localhost:8080) and enter your Mapbox API k
 
 ## 💰 Potential Monetization & Growth Ideas
 
+* Run Ads on Homepage
 * Freemium model for educators
 * Paid premium features (e.g., custom historical overlays)
 * API for third-party history apps
