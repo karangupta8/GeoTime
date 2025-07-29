@@ -149,6 +149,105 @@ Visit [http://localhost:8080](http://localhost:8080) and enter your Mapbox API k
 
 ## **🐛 Known Issues**
 
+## 🛠 Technical Overview
+
+### **Architecture & Data Flow**
+
+The application follows a client-server architecture with the following data flow:
+
+1. **Data Source**: Historical events are stored in `server/src/data/demoEvents.json` containing structured event data with fields like title, year, coordinates, category, and description.
+
+2. **Backend API**: Node.js/Express server (`server/src/index.js`) serves event data via REST endpoints:
+   - `GET /api/events?year=YYYY` - Fetches events filtered by year
+   - The `DataService.js` handles JSON file reading and caching with 5-minute expiry
+   - `WikipediaService.js` provides Wikipedia API integration for additional event data
+
+3. **Frontend Data Layer**: `HistoryDataService.ts` manages client-side data fetching, caching, and error handling with automatic cache invalidation on year changes.
+
+### **Timeline Slider Implementation**
+
+The timeline slider (`TimelineSlider.tsx`) provides dual functionality:
+- **Year Selection**: Users can select specific years between 1000 BCE to 2025 CE
+- **Range Selection**: Supports continuous year ranges with a maximum 5-year span
+- **Input Methods**: Both slider interface and direct number input fields
+- **Event Filtering**: Automatically triggers data refetch when year selection changes
+- **BCE/CE Formatting**: Proper historical year formatting with negative values for BCE
+
+### **Map Rendering & Visualization**
+
+**Technology**: Mapbox GL JS with Supercluster for marker clustering
+
+**Implementation** (`MapClustering.tsx`):
+- **3D Globe**: Mapbox with `projection: 'globe'` for immersive experience
+- **Authentication**: Dynamic API key input with localStorage persistence
+- **Atmosphere Effects**: Fog and lighting effects for realistic globe appearance
+- **Auto-rotation**: Gentle spinning animation when not interacting
+
+### **Clustering Logic**
+
+**Supercluster Integration**:
+- **Dynamic Clustering**: Events are clustered based on zoom level and geographical proximity
+- **Cluster Markers**: Display event count with click-to-zoom functionality
+- **Individual Markers**: Show as distinct points when zoomed in sufficiently
+- **Performance**: Efficiently handles large datasets by rendering only visible markers
+
+### **Event Interaction System**
+
+**Marker Behavior**:
+- **Click Events**: Individual markers trigger `onEventSelect` callback
+- **Popup Display**: Event details shown in modal overlay (`EventPopup.tsx`)
+- **Wikipedia Integration**: Direct links to source articles
+- **Responsive Design**: Adapts to different screen sizes and zoom levels
+
+### **Backend Architecture**
+
+**Express Server Structure**:
+- **Static Data**: Demo events served from JSON file
+- **Wikipedia Service**: Live data fetching with rate limiting and deduplication
+- **Caching Strategy**: In-memory caching with configurable expiry times
+- **CORS Handling**: Configured for cross-origin requests
+
+### **Frontend Technology Stack**
+
+**Core Technologies**:
+- **React 18**: Component-based architecture with hooks
+- **TypeScript**: Type safety and better developer experience
+- **Tailwind CSS**: Utility-first styling with custom design tokens
+- **Vite**: Fast development build tool
+- **shadcn/ui**: Pre-built component library for consistent UI
+
+**State Management**:
+- **React Hooks**: useState, useEffect for local component state
+- **Event Flow**: Props-based communication between components
+- **Data Synchronization**: Automatic re-fetching on timeline changes
+
+### **Performance Optimizations**
+
+**Current Implementations**:
+- **Marker Clustering**: Reduces DOM elements for large datasets
+- **Data Caching**: Prevents redundant API calls
+- **Lazy Loading**: Map renders only visible markers
+- **Debounced Updates**: Prevents excessive re-renders during interactions
+
+**Suggested Enhancements**:
+- **Virtual Scrolling**: For timeline with dense event data
+- **Progressive Loading**: Load events in time chunks
+- **Image Optimization**: Lazy load event images in popups
+- **Service Workers**: Offline caching for frequently accessed data
+
+### **3D Interactions & Animations**
+
+**Globe Interactions**:
+- **Mouse/Touch Controls**: Pan, zoom, and rotate with Mapbox controls
+- **Smooth Transitions**: Animated camera movements and marker appearances
+- **Auto-rotation**: Configurable spinning with user interaction detection
+- **Zoom-dependent Rendering**: Different marker styles based on zoom level
+
+**Performance Considerations**:
+- **WebGL Acceleration**: Hardware-accelerated rendering via Mapbox GL
+- **Frame Rate Optimization**: Smooth 60fps animations
+- **Memory Management**: Proper cleanup of map resources and event listeners
+
 ## 🛠 Built With
 
 * **Frontend:** React, Tailwind CSS

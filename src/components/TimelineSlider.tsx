@@ -187,10 +187,6 @@ const TimelineSlider: React.FC<TimelineSliderProps> = ({ selectedYear, onYearCha
             
             <div className="flex justify-between mt-3 text-xs text-muted-foreground">
               <span>{formatYear(minYear)}</span>
-              <span>Classical</span>
-              <span>Medieval</span>
-              <span>Renaissance</span>
-              <span>Modern</span>
               <span>{formatYear(maxYear)}</span>
             </div>
           </div>
