@@ -26,39 +26,33 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
   useEffect(() => {
     if (!mapContainer.current) return;
 
-    // Initialize map with free OpenStreetMap tiles
+    // Initialize map with globe projection and satellite imagery
     map.current = new maplibregl.Map({
       container: mapContainer.current,
       style: {
         version: 8,
         sources: {
-          'osm-tiles': {
+          'satellite': {
             type: 'raster',
-            tiles: [
-              'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-              'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
-              'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
-            ],
+            tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
             tileSize: 256,
-            attribution: '© OpenStreetMap contributors'
+            attribution: '© Esri, Maxar, Earthstar Geographics'
           }
         },
         layers: [
           {
-            id: 'osm-tiles',
+            id: 'satellite',
             type: 'raster',
-            source: 'osm-tiles',
-            minzoom: 0,
-            maxzoom: 19
+            source: 'satellite'
           }
         ]
       },
-      zoom: 2,
-      center: [20, 40],
-      pitch: 0,
-    });
+      center: [30, 15],
+      zoom: 1.5,
+      pitch: 45
+    } as any);
 
-    // Add navigation controls
+    // Add navigation controls with visual pitch
     map.current.addControl(
       new maplibregl.NavigationControl({
         visualizePitch: true,
@@ -66,10 +60,78 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
       'top-right'
     );
 
-    // Map ready for use
+    // Disable scroll zoom for smoother globe experience
+    map.current.scrollZoom.disable();
+
+    // Add atmosphere and fog effects
     map.current.on('style.load', () => {
-      console.log('MapLibre map loaded successfully');
+      console.log('MapLibre globe loaded successfully');
+      // Set globe projection after style load
+      if (map.current) {
+        (map.current as any).setProjection('globe');
+        // Add fog effects if supported
+        try {
+          (map.current as any).setFog({
+            color: 'rgb(186, 210, 235)',
+            'high-color': 'rgb(36, 92, 223)',
+            'horizon-blend': 0.02,
+            'space-color': 'rgb(11, 11, 25)',
+            'star-intensity': 0.6
+          });
+        } catch (error) {
+          console.log('Fog effects not supported:', error);
+        }
+      }
     });
+
+    // Globe rotation variables
+    const secondsPerRevolution = 240;
+    const maxSpinZoom = 5;
+    const slowSpinZoom = 3;
+    let userInteracting = false;
+    let spinEnabled = true;
+
+    // Spin globe function
+    function spinGlobe() {
+      if (!map.current) return;
+      const zoom = map.current.getZoom();
+      if (spinEnabled && !userInteracting && zoom < maxSpinZoom) {
+        let distancePerSecond = 360 / secondsPerRevolution;
+        if (zoom > slowSpinZoom) {
+          const zoomDif = (maxSpinZoom - zoom) / (maxSpinZoom - slowSpinZoom);
+          distancePerSecond *= zoomDif;
+        }
+        const center = map.current.getCenter();
+        center.lng -= distancePerSecond;
+        map.current.easeTo({ center, duration: 1000, easing: (n) => n });
+      }
+    }
+
+    // Event listeners for interaction
+    map.current.on('mousedown', () => {
+      userInteracting = true;
+    });
+    
+    map.current.on('dragstart', () => {
+      userInteracting = true;
+    });
+    
+    map.current.on('mouseup', () => {
+      userInteracting = false;
+      spinGlobe();
+    });
+    
+    map.current.on('touchend', () => {
+      userInteracting = false;
+      spinGlobe();
+    });
+
+    map.current.on('moveend', () => {
+      spinGlobe();
+    });
+
+    // Start the globe spinning
+    spinGlobe();
 
     // Cleanup
     return () => {
