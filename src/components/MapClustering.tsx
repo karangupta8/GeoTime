@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import Supercluster from 'supercluster';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,47 +16,46 @@ interface MapProps {
 
 const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const map = useRef<maplibregl.Map | null>(null);
+  const markersRef = useRef<maplibregl.Marker[]>([]);
   const superclusterRef = useRef<Supercluster | null>(null);
-  const [apiKey, setApiKey] = useState<string>('');
-  const [hasApiKey, setHasApiKey] = useState<boolean>(false);
   const [events, setEvents] = useState<HistoricalEvent[]>([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const historyService = HistoryDataService.getInstance();
 
-  // Check if user has Mapbox API key
-  useEffect(() => {
-    const savedKey = localStorage.getItem('mapbox_api_key');
-    if (savedKey) {
-      setApiKey(savedKey);
-      setHasApiKey(true);
-    }
-  }, []);
-
-  const saveApiKey = () => {
-    if (apiKey.trim()) {
-      localStorage.setItem('mapbox_api_key', apiKey.trim());
-      setHasApiKey(true);
-      toast({
-        title: "API Key Saved",
-        description: "Mapbox API key saved successfully. Initializing map...",
-      });
-    }
-  };
 
   useEffect(() => {
-    if (!mapContainer.current || !hasApiKey) return;
+    if (!mapContainer.current) return;
 
-    // Initialize map
-    mapboxgl.accessToken = localStorage.getItem('mapbox_api_key') || '';
-    
-    map.current = new mapboxgl.Map({
+    // Initialize map with free OpenStreetMap tiles
+    map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/dark-v11',
-      projection: 'globe' as any,
+      style: {
+        version: 8,
+        sources: {
+          'osm-tiles': {
+            type: 'raster',
+            tiles: [
+              'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
+            ],
+            tileSize: 256,
+            attribution: '© OpenStreetMap contributors'
+          }
+        },
+        layers: [
+          {
+            id: 'osm-tiles',
+            type: 'raster',
+            source: 'osm-tiles',
+            minzoom: 0,
+            maxzoom: 19
+          }
+        ]
+      },
       zoom: 2,
       center: [20, 40],
       pitch: 0,
@@ -64,19 +63,15 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
 
     // Add navigation controls
     map.current.addControl(
-      new mapboxgl.NavigationControl({
+      new maplibregl.NavigationControl({
         visualizePitch: true,
       }),
       'top-right'
     );
 
-    // Add atmosphere and fog effects
+    // Map ready for use
     map.current.on('style.load', () => {
-      map.current?.setFog({
-        color: 'hsl(210, 30%, 8%)',
-        'high-color': 'hsl(195, 25%, 15%)',
-        'horizon-blend': 0.1,
-      });
+      console.log('MapLibre map loaded successfully');
     });
 
     // Initialize supercluster
@@ -95,11 +90,10 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
       markersRef.current = [];
       map.current?.remove();
     };
-  }, [hasApiKey]);
+  }, []);
 
   // Load historical events for the selected year
   useEffect(() => {
-    if (!hasApiKey) return;
 
     const loadEvents = async () => {
       setIsLoadingEvents(true);
@@ -123,7 +117,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
     };
 
     loadEvents();
-  }, [selectedYear, hasApiKey, historyService, toast]);
+  }, [selectedYear, historyService, toast]);
 
   const updateClusters = () => {
     if (!map.current || !superclusterRef.current) return;
@@ -154,7 +148,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
           cluster.properties.cluster_id
         );
         
-        const marker = new mapboxgl.Marker(clusterMarker)
+        const marker = new maplibregl.Marker(clusterMarker)
           .setLngLat([lng, lat])
           .addTo(map.current!);
 
@@ -164,7 +158,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
         const event = cluster.properties as HistoricalEvent;
         const eventMarker = createEventMarker(event);
         
-        const marker = new mapboxgl.Marker(eventMarker)
+        const marker = new maplibregl.Marker(eventMarker)
           .setLngLat([lng, lat])
           .addTo(map.current!);
 
@@ -236,7 +230,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
 
   // Update markers based on loaded events
   useEffect(() => {
-    if (!map.current || !hasApiKey || !superclusterRef.current) return;
+    if (!map.current || !superclusterRef.current) return;
 
     // Convert events to GeoJSON format for supercluster
     const points = events.map(event => ({
@@ -255,47 +249,8 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
     
     // Update clusters
     updateClusters();
-  }, [events, selectedYear, hasApiKey, onEventSelect]);
+  }, [events, selectedYear, onEventSelect]);
 
-  if (!hasApiKey) {
-    return (
-      <div className="relative w-full h-screen bg-gradient-ocean flex items-center justify-center">
-        <Card className="p-8 max-w-md w-full mx-4 bg-card/95 backdrop-blur-sm border-border/50">
-          <div className="text-center space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">Connect to Mapbox</h2>
-            <p className="text-muted-foreground">
-              To display the interactive historical map with clustering, please enter your Mapbox public token. 
-              You can find it at{' '}
-              <a 
-                href="https://mapbox.com/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-accent hover:underline"
-              >
-                mapbox.com
-              </a>
-            </p>
-            <div className="space-y-3">
-              <Input
-                type="text"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Enter your Mapbox public token"
-                className="transition-all duration-300 focus:ring-2 focus:ring-accent/50"
-              />
-              <Button 
-                onClick={saveApiKey}
-                disabled={!apiKey.trim()}
-                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
-              >
-                Connect Map
-              </Button>
-            </div>
-          </div>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="relative w-full h-screen">

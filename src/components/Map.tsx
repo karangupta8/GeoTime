@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,46 +15,44 @@ interface MapProps {
 
 const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<mapboxgl.Marker[]>([]);
-  const [apiKey, setApiKey] = useState<string>('');
-  const [hasApiKey, setHasApiKey] = useState<boolean>(false);
+  const map = useRef<maplibregl.Map | null>(null);
+  const markersRef = useRef<maplibregl.Marker[]>([]);
   const [events, setEvents] = useState<HistoricalEvent[]>([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const historyService = HistoryDataService.getInstance();
 
-  // Check if user has Mapbox API key
   useEffect(() => {
-    const savedKey = localStorage.getItem('mapbox_api_key');
-    if (savedKey) {
-      setApiKey(savedKey);
-      setHasApiKey(true);
-    }
-  }, []);
+    if (!mapContainer.current) return;
 
-  const saveApiKey = () => {
-    if (apiKey.trim()) {
-      localStorage.setItem('mapbox_api_key', apiKey.trim());
-      setHasApiKey(true);
-      toast({
-        title: "API Key Saved",
-        description: "Mapbox API key saved successfully. Initializing map...",
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (!mapContainer.current || !hasApiKey) return;
-
-    // Initialize map
-    mapboxgl.accessToken = localStorage.getItem('mapbox_api_key') || '';
-    
-    map.current = new mapboxgl.Map({
+    // Initialize map with free OpenStreetMap tiles
+    map.current = new maplibregl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/dark-v11',
-      projection: 'globe' as any,
+      style: {
+        version: 8,
+        sources: {
+          'osm-tiles': {
+            type: 'raster',
+            tiles: [
+              'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png'
+            ],
+            tileSize: 256,
+            attribution: '© OpenStreetMap contributors'
+          }
+        },
+        layers: [
+          {
+            id: 'osm-tiles',
+            type: 'raster',
+            source: 'osm-tiles',
+            minzoom: 0,
+            maxzoom: 19
+          }
+        ]
+      },
       zoom: 2,
       center: [20, 40],
       pitch: 0,
@@ -62,19 +60,15 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
 
     // Add navigation controls
     map.current.addControl(
-      new mapboxgl.NavigationControl({
+      new maplibregl.NavigationControl({
         visualizePitch: true,
       }),
       'top-right'
     );
 
-    // Add atmosphere and fog effects
+    // Map ready for use
     map.current.on('style.load', () => {
-      map.current?.setFog({
-        color: 'hsl(210, 30%, 8%)',
-        'high-color': 'hsl(195, 25%, 15%)',
-        'horizon-blend': 0.1,
-      });
+      console.log('MapLibre map loaded successfully');
     });
 
     // Cleanup
@@ -83,11 +77,10 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
       markersRef.current = [];
       map.current?.remove();
     };
-  }, [hasApiKey]);
+  }, []);
 
   // Load historical events for the selected year
   useEffect(() => {
-    if (!hasApiKey) return;
 
     const loadEvents = async () => {
       setIsLoadingEvents(true);
@@ -110,11 +103,11 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
     };
 
     loadEvents();
-  }, [selectedYear, hasApiKey, historyService, toast]);
+  }, [selectedYear, historyService, toast]);
 
   // Update markers based on loaded events
   useEffect(() => {
-    if (!map.current || !hasApiKey) return;
+    if (!map.current) return;
 
     // Clear existing markers
     markersRef.current.forEach(marker => marker.remove());
@@ -134,7 +127,7 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
         </div>
       `;
 
-      const marker = new mapboxgl.Marker(markerElement)
+      const marker = new maplibregl.Marker(markerElement)
         .setLngLat([event.location.longitude, event.location.latitude])
         .addTo(map.current!);
 
@@ -145,47 +138,8 @@ const Map: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
 
       markersRef.current.push(marker);
     });
-  }, [events, selectedYear, hasApiKey, onEventSelect]);
+  }, [events, selectedYear, onEventSelect]);
 
-  if (!hasApiKey) {
-    return (
-      <div className="relative w-full h-screen bg-gradient-ocean flex items-center justify-center">
-        <Card className="p-8 max-w-md w-full mx-4 bg-card/95 backdrop-blur-sm border-border/50">
-          <div className="text-center space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">Connect to Mapbox</h2>
-            <p className="text-muted-foreground">
-              To display the interactive historical map, please enter your Mapbox public token. 
-              You can find it at{' '}
-              <a 
-                href="https://mapbox.com/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-accent hover:underline"
-              >
-                mapbox.com
-              </a>
-            </p>
-            <div className="space-y-3">
-              <Input
-                type="text"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Enter your Mapbox public token"
-                className="transition-all duration-300 focus:ring-2 focus:ring-accent/50"
-              />
-              <Button 
-                onClick={saveApiKey}
-                disabled={!apiKey.trim()}
-                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
-              >
-                Connect Map
-              </Button>
-            </div>
-          </div>
-        </Card>
-      </div>
-    );
-  }
 
   return (
     <div className="relative w-full h-screen">

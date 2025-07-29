@@ -90,7 +90,7 @@ cd server && npm install && cd ..
 npm run dev
 ```
 
-Visit [http://localhost:8080](http://localhost:8080) and enter your Mapbox API key when prompted.
+Visit [http://localhost:8080](http://localhost:8080) - no API keys required!
 
 ## **API Endpoints**
 
@@ -175,13 +175,13 @@ The timeline slider (`TimelineSlider.tsx`) provides dual functionality:
 
 ### **Map Rendering & Visualization**
 
-**Technology**: Mapbox GL JS with Supercluster for marker clustering
+**Technology**: MapLibre GL JS (open-source) with Supercluster for marker clustering
 
 **Implementation** (`MapClustering.tsx`):
-- **3D Globe**: Mapbox with `projection: 'globe'` for immersive experience
-- **Authentication**: Dynamic API key input with localStorage persistence
-- **Atmosphere Effects**: Fog and lighting effects for realistic globe appearance
-- **Auto-rotation**: Gentle spinning animation when not interacting
+- **Free Mapping**: Uses OpenStreetMap tiles requiring no API keys
+- **Interactive Globe**: Full pan, zoom, and rotate functionality
+- **Open Source**: Completely free alternative to proprietary mapping services
+- **Performance**: Optimized rendering with smooth interactions
 
 ### **Clustering Logic**
 
@@ -244,7 +244,7 @@ The timeline slider (`TimelineSlider.tsx`) provides dual functionality:
 - **Zoom-dependent Rendering**: Different marker styles based on zoom level
 
 **Performance Considerations**:
-- **WebGL Acceleration**: Hardware-accelerated rendering via Mapbox GL
+- **WebGL Acceleration**: Hardware-accelerated rendering via MapLibre GL
 - **Frame Rate Optimization**: Smooth 60fps animations
 - **Memory Management**: Proper cleanup of map resources and event listeners
 
