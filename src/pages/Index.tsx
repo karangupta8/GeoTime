@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MapWithClustering from '@/components/MapClustering';
 import TimelineSlider from '@/components/TimelineSlider';
 import EventPopup from '@/components/EventPopup';
-import EventSummaryPanel from '@/components/EventSummaryPanel';
+import TimelineWithSummary from '@/components/TimelineWithSummary'; // ✅ Make sure the path is correct
 import Header from '@/components/Header';
 import DataSourcePanel from '@/components/DataSourcePanel';
 import { HistoryDataService } from '@/services/HistoryDataService';
@@ -90,21 +90,18 @@ const Index = () => {
       
       {/* Main Layout - Three panel layout: Summary, Timeline, Map */}
       <div className="flex h-[calc(100vh-4rem)]">
-        {/* Left Summary Panel */}
-        <EventSummaryPanel 
-          summaries={eventSummaries}
-          isLoading={isGeneratingSummary}
-        />
+        {/* Left Panel: Combined Timeline + Summary */}
+<div className="w-96 flex-shrink-0 p-6 border-r border-border/20 overflow-y-auto">
+  <TimelineWithSummary
+    selectedYear={selectedYear}
+    onYearChange={handleYearChange}
+    eventCount={eventCount}
+    onSettingsClick={() => setIsDataSourcePanelOpen(true)}
+    summaries={eventSummaries}
+    isLoading={isGeneratingSummary}
+  />
+</div>
 
-        {/* Middle Timeline Pane */}
-        <div className="w-96 flex-shrink-0 p-6 border-r border-border/20">
-          <TimelineSlider 
-            selectedYear={selectedYear}
-            onYearChange={handleYearChange}
-            eventCount={eventCount}
-            onSettingsClick={() => setIsDataSourcePanelOpen(true)}
-          />
-        </div>
 
         {/* Right Map Container */}
         <div className="flex-1 relative">

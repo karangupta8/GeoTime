@@ -33,7 +33,7 @@ const EventSummaryPanel: React.FC<EventSummaryPanelProps> = ({ summaries, isLoad
   }
 
   return (
-    <div className="w-80 flex-shrink-0 border-r border-border/20 bg-card/50 backdrop-blur-sm">
+    <div className="w-full border-border/20 bg-card/50 backdrop-blur-sm">
       <div className="p-4 border-b border-border/20">
         <div className="flex items-center gap-2 mb-2">
           <Sparkles className="w-5 h-5 text-accent" />

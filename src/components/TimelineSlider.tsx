@@ -192,7 +192,7 @@ const TimelineSlider: React.FC<TimelineSliderProps> = ({ selectedYear, onYearCha
           </div>
           
           <div className="text-center text-sm text-muted-foreground mt-6">
-            Drag to select a year or range. Hold and drag both handles to select a time span.
+            Drag to select a year or range.
           </div>
         </div>
       </div>
