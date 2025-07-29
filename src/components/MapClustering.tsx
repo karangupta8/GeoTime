@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import Supercluster from 'supercluster';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,125 +16,68 @@ interface MapProps {
 
 const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<maplibregl.Map | null>(null);
-  const markersRef = useRef<maplibregl.Marker[]>([]);
+  const map = useRef<mapboxgl.Map | null>(null);
+  const markersRef = useRef<mapboxgl.Marker[]>([]);
   const superclusterRef = useRef<Supercluster | null>(null);
+  const [apiKey, setApiKey] = useState<string>('');
+  const [hasApiKey, setHasApiKey] = useState<boolean>(false);
   const [events, setEvents] = useState<HistoricalEvent[]>([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const historyService = HistoryDataService.getInstance();
 
+  // Check if user has Mapbox API key
+  useEffect(() => {
+    const savedKey = localStorage.getItem('mapbox_api_key');
+    if (savedKey) {
+      setApiKey(savedKey);
+      setHasApiKey(true);
+    }
+  }, []);
+
+  const saveApiKey = () => {
+    if (apiKey.trim()) {
+      localStorage.setItem('mapbox_api_key', apiKey.trim());
+      setHasApiKey(true);
+      toast({
+        title: "API Key Saved",
+        description: "Mapbox API key saved successfully. Initializing map...",
+      });
+    }
+  };
 
   useEffect(() => {
-    if (!mapContainer.current) return;
+    if (!mapContainer.current || !hasApiKey) return;
 
-    // Initialize map with globe projection and satellite imagery
-    map.current = new maplibregl.Map({
+    // Initialize map
+    mapboxgl.accessToken = localStorage.getItem('mapbox_api_key') || '';
+    
+    map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: {
-        version: 8,
-        sources: {
-          'satellite': {
-            type: 'raster',
-            tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-            tileSize: 256,
-            attribution: '© Esri, Maxar, Earthstar Geographics'
-          }
-        },
-        layers: [
-          {
-            id: 'satellite',
-            type: 'raster',
-            source: 'satellite'
-          }
-        ]
-      },
-      center: [30, 15],
-      zoom: 1.5,
-      pitch: 45
-    } as any);
+      style: 'mapbox://styles/mapbox/dark-v11',
+      projection: 'globe' as any,
+      zoom: 2,
+      center: [20, 40],
+      pitch: 0,
+    });
 
-    // Add navigation controls with visual pitch
+    // Add navigation controls
     map.current.addControl(
-      new maplibregl.NavigationControl({
+      new mapboxgl.NavigationControl({
         visualizePitch: true,
       }),
       'top-right'
     );
 
-    // Disable scroll zoom for smoother globe experience
-    map.current.scrollZoom.disable();
-
     // Add atmosphere and fog effects
     map.current.on('style.load', () => {
-      console.log('MapLibre globe loaded successfully');
-      // Set globe projection after style load
-      if (map.current) {
-        (map.current as any).setProjection('globe');
-        // Add fog effects if supported
-        try {
-          (map.current as any).setFog({
-            color: 'rgb(186, 210, 235)',
-            'high-color': 'rgb(36, 92, 223)',
-            'horizon-blend': 0.02,
-            'space-color': 'rgb(11, 11, 25)',
-            'star-intensity': 0.6
-          });
-        } catch (error) {
-          console.log('Fog effects not supported:', error);
-        }
-      }
+      map.current?.setFog({
+        color: 'hsl(210, 30%, 8%)',
+        'high-color': 'hsl(195, 25%, 15%)',
+        'horizon-blend': 0.1,
+      });
     });
-
-    // Globe rotation variables
-    const secondsPerRevolution = 240;
-    const maxSpinZoom = 5;
-    const slowSpinZoom = 3;
-    let userInteracting = false;
-    let spinEnabled = true;
-
-    // Spin globe function
-    function spinGlobe() {
-      if (!map.current) return;
-      const zoom = map.current.getZoom();
-      if (spinEnabled && !userInteracting && zoom < maxSpinZoom) {
-        let distancePerSecond = 360 / secondsPerRevolution;
-        if (zoom > slowSpinZoom) {
-          const zoomDif = (maxSpinZoom - zoom) / (maxSpinZoom - slowSpinZoom);
-          distancePerSecond *= zoomDif;
-        }
-        const center = map.current.getCenter();
-        center.lng -= distancePerSecond;
-        map.current.easeTo({ center, duration: 1000, easing: (n) => n });
-      }
-    }
-
-    // Event listeners for interaction
-    map.current.on('mousedown', () => {
-      userInteracting = true;
-    });
-    
-    map.current.on('dragstart', () => {
-      userInteracting = true;
-    });
-    
-    map.current.on('mouseup', () => {
-      userInteracting = false;
-      spinGlobe();
-    });
-    
-    map.current.on('touchend', () => {
-      userInteracting = false;
-      spinGlobe();
-    });
-
-    map.current.on('moveend', () => {
-      spinGlobe();
-    });
-
-    // Start the globe spinning
-    spinGlobe();
 
     // Initialize supercluster
     superclusterRef.current = new Supercluster({
@@ -152,10 +95,11 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
       markersRef.current = [];
       map.current?.remove();
     };
-  }, []);
+  }, [hasApiKey]);
 
   // Load historical events for the selected year
   useEffect(() => {
+    if (!hasApiKey) return;
 
     const loadEvents = async () => {
       setIsLoadingEvents(true);
@@ -179,7 +123,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
     };
 
     loadEvents();
-  }, [selectedYear, historyService, toast]);
+  }, [selectedYear, hasApiKey, historyService, toast]);
 
   const updateClusters = () => {
     if (!map.current || !superclusterRef.current) return;
@@ -210,7 +154,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
           cluster.properties.cluster_id
         );
         
-        const marker = new maplibregl.Marker(clusterMarker)
+        const marker = new mapboxgl.Marker(clusterMarker)
           .setLngLat([lng, lat])
           .addTo(map.current!);
 
@@ -220,7 +164,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
         const event = cluster.properties as HistoricalEvent;
         const eventMarker = createEventMarker(event);
         
-        const marker = new maplibregl.Marker(eventMarker)
+        const marker = new mapboxgl.Marker(eventMarker)
           .setLngLat([lng, lat])
           .addTo(map.current!);
 
@@ -292,7 +236,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
 
   // Update markers based on loaded events
   useEffect(() => {
-    if (!map.current || !superclusterRef.current) return;
+    if (!map.current || !hasApiKey || !superclusterRef.current) return;
 
     // Convert events to GeoJSON format for supercluster
     const points = events.map(event => ({
@@ -311,8 +255,47 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
     
     // Update clusters
     updateClusters();
-  }, [events, selectedYear, onEventSelect]);
+  }, [events, selectedYear, hasApiKey, onEventSelect]);
 
+  if (!hasApiKey) {
+    return (
+      <div className="relative w-full h-screen bg-gradient-ocean flex items-center justify-center">
+        <Card className="p-8 max-w-md w-full mx-4 bg-card/95 backdrop-blur-sm border-border/50">
+          <div className="text-center space-y-4">
+            <h2 className="text-2xl font-bold text-foreground">Connect to Mapbox</h2>
+            <p className="text-muted-foreground">
+              To display the interactive historical map with clustering, please enter your Mapbox public token. 
+              You can find it at{' '}
+              <a 
+                href="https://mapbox.com/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-accent hover:underline"
+              >
+                mapbox.com
+              </a>
+            </p>
+            <div className="space-y-3">
+              <Input
+                type="text"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="Enter your Mapbox public token"
+                className="transition-all duration-300 focus:ring-2 focus:ring-accent/50"
+              />
+              <Button 
+                onClick={saveApiKey}
+                disabled={!apiKey.trim()}
+                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+              >
+                Connect Map
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full h-screen">
