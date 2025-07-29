@@ -44,23 +44,26 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen relative bg-gradient-ocean">
+    <div className="min-h-screen bg-gradient-ocean">
       <Header onSettingsClick={() => setIsDataSourcePanelOpen(true)} />
       
-      {/* Map Container */}
-      <div className="relative w-full h-screen">
-        <MapWithClustering 
-          selectedYear={selectedYear} 
-          onEventSelect={handleEventSelect}
-          key={dataSourceVersion} // Force re-render when data sources change
-        />
-        
-        {/* Timeline Overlay */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-full max-w-5xl px-6">
+      {/* Main Layout - Flexbox with Timeline Left, Map Right */}
+      <div className="flex h-[calc(100vh-4rem)]">
+        {/* Left Timeline Pane */}
+        <div className="w-96 flex-shrink-0 p-6 border-r border-border/20">
           <TimelineSlider 
             selectedYear={selectedYear}
             onYearChange={handleYearChange}
             eventCount={eventCount}
+          />
+        </div>
+
+        {/* Right Map Container */}
+        <div className="flex-1 relative">
+          <MapWithClustering 
+            selectedYear={selectedYear} 
+            onEventSelect={handleEventSelect}
+            key={dataSourceVersion} // Force re-render when data sources change
           />
         </div>
       </div>
