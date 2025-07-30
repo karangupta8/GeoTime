@@ -28,7 +28,7 @@ const TimelineWithSummary: React.FC<TimelineWithSummaryProps> = ({
   isLoading
 }) => {
   return (
-    <div className="flex flex-col space-y-6 w-full max-w-4xl mx-auto px-4 py-6">
+    <div className="flex flex-col space-y-4 lg:space-y-6 w-full px-2 lg:px-4 py-4 lg:py-6">
       {/* Timeline Panel - keep original card styling */}
       <div className="rounded-2xl border border-border/50 bg-card/95 backdrop-blur-sm shadow-elegant">
         <TimelineSlider

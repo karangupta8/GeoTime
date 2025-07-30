@@ -88,23 +88,22 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-ocean">
       <Header onSettingsClick={() => setIsDataSourcePanelOpen(true)} />
       
-      {/* Main Layout - Three panel layout: Summary, Timeline, Map */}
-      <div className="flex h-[calc(100vh-4rem)]">
-        {/* Left Panel: Combined Timeline + Summary */}
-<div className="w-96 flex-shrink-0 p-6 border-r border-border/20 overflow-y-auto">
-  <TimelineWithSummary
-    selectedYear={selectedYear}
-    onYearChange={handleYearChange}
-    eventCount={eventCount}
-    onSettingsClick={() => setIsDataSourcePanelOpen(true)}
-    summaries={eventSummaries}
-    isLoading={isGeneratingSummary}
-  />
-</div>
-
+      {/* Main Layout - Mobile Responsive */}
+      <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)]">
+        {/* Left Panel: Combined Timeline + Summary - Collapsible on mobile */}
+        <div className="w-full lg:w-96 lg:flex-shrink-0 p-4 lg:p-6 border-b lg:border-b-0 lg:border-r border-border/20 overflow-y-auto max-h-[40vh] lg:max-h-none">
+          <TimelineWithSummary
+            selectedYear={selectedYear}
+            onYearChange={handleYearChange}
+            eventCount={eventCount}
+            onSettingsClick={() => setIsDataSourcePanelOpen(true)}
+            summaries={eventSummaries}
+            isLoading={isGeneratingSummary}
+          />
+        </div>
 
         {/* Right Map Container */}
-        <div className="flex-1 relative">
+        <div className="flex-1 relative min-h-[60vh] lg:min-h-auto">
           <MapWithClustering 
             selectedYear={selectedYear} 
             onEventSelect={handleEventSelect}
