@@ -1,7 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
+import dotenv from 'dotenv';
 import eventsRouter from './routes/events.js';
+import mapboxRouter from './routes/mapbox.js';
+import summaryRouter from './routes/summary.js';
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -21,8 +27,19 @@ app.use(cors({
 app.use(express.json());
 app.use(limiter);
 
+// Validate required environment variables
+const requiredEnvVars = ['MAPBOX_ACCESS_TOKEN'];
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+
+if (missingEnvVars.length > 0) {
+  console.warn(`Warning: Missing environment variables: ${missingEnvVars.join(', ')}`);
+  console.warn('Some features may not work properly. Please check your .env file.');
+}
+
 // Routes
 app.use('/api', eventsRouter);
+app.use('/api', mapboxRouter);
+app.use('/api', summaryRouter);
 
 // Health check
 app.get('/health', (req, res) => {

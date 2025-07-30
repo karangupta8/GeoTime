@@ -3,8 +3,6 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import Supercluster from 'supercluster';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { HistoryDataService } from '@/services/HistoryDataService';
 import { HistoricalEvent } from '@/types/HistoricalEvent';
@@ -19,44 +17,70 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const superclusterRef = useRef<Supercluster | null>(null);
-  const [apiKey, setApiKey] = useState<string>('');
-  const [hasApiKey, setHasApiKey] = useState<boolean>(false);
+  const [isMapboxConfigured, setIsMapboxConfigured] = useState<boolean>(false);
+  const [isCheckingConfig, setIsCheckingConfig] = useState<boolean>(true);
   const [events, setEvents] = useState<HistoricalEvent[]>([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const historyService = HistoryDataService.getInstance();
 
-  // Check if user has Mapbox API key
+  // Check if Mapbox is configured on the backend
   useEffect(() => {
-    const savedKey = localStorage.getItem('mapbox_api_key');
-    if (savedKey) {
-      setApiKey(savedKey);
-      setHasApiKey(true);
-    }
-  }, []);
+    const checkMapboxConfig = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/mapbox/config');
+        const data = await response.json();
+        setIsMapboxConfigured(data.configured);
+        
+        if (!data.configured) {
+          toast({
+            title: "Mapbox Not Configured",
+            description: "Please configure your Mapbox API key in the server environment variables.",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error('Error checking Mapbox configuration:', error);
+        setIsMapboxConfigured(false);
+        toast({
+          title: "Server Connection Error",
+          description: "Unable to connect to the backend server. Please ensure it's running.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsCheckingConfig(false);
+      }
+    };
 
-  const saveApiKey = () => {
-    if (apiKey.trim()) {
-      localStorage.setItem('mapbox_api_key', apiKey.trim());
-      setHasApiKey(true);
-      toast({
-        title: "API Key Saved",
-        description: "Mapbox API key saved successfully. Initializing map...",
-      });
-    }
-  };
+    checkMapboxConfig();
+  }, [toast]);
 
   useEffect(() => {
-    if (!mapContainer.current || !hasApiKey) return;
+    if (!mapContainer.current || !isMapboxConfigured) return;
 
-    // Initialize map
-    mapboxgl.accessToken = localStorage.getItem('mapbox_api_key') || '';
+    // Initialize map with a dummy token (will use proxy for actual requests)
+    mapboxgl.accessToken = 'pk.dummy'; // Not used, but required by mapbox-gl
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/dark-v11',
-      projection: 'globe' as any,
+      style: {
+        version: 8,
+        sources: {
+          'mapbox-tiles': {
+            type: 'raster',
+            tiles: ['http://localhost:3001/api/mapbox/tiles/{z}/{x}/{y}?style=dark-v11'],
+            tileSize: 512,
+          },
+        },
+        layers: [
+          {
+            id: 'mapbox-tiles',
+            type: 'raster',
+            source: 'mapbox-tiles',
+          },
+        ],
+      },
       zoom: 2,
       center: [20, 40],
       pitch: 0,
@@ -70,15 +94,6 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
       'top-right'
     );
 
-    // Add atmosphere and fog effects
-    map.current.on('style.load', () => {
-      map.current?.setFog({
-        color: 'hsl(210, 30%, 8%)',
-        'high-color': 'hsl(195, 25%, 15%)',
-        'horizon-blend': 0.1,
-      });
-    });
-
     // Initialize supercluster
     superclusterRef.current = new Supercluster({
       radius: 40,
@@ -88,6 +103,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
 
     // Update clusters on zoom
     map.current.on('zoom', updateClusters);
+    map.current.on('moveend', updateClusters);
 
     // Cleanup
     return () => {
@@ -95,11 +111,11 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
       markersRef.current = [];
       map.current?.remove();
     };
-  }, [hasApiKey]);
+  }, [isMapboxConfigured]);
 
   // Load historical events for the selected year
   useEffect(() => {
-    if (!hasApiKey) return;
+    if (!isMapboxConfigured) return;
 
     const loadEvents = async () => {
       setIsLoadingEvents(true);
@@ -123,7 +139,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
     };
 
     loadEvents();
-  }, [selectedYear, hasApiKey, historyService, toast]);
+  }, [selectedYear, isMapboxConfigured, historyService, toast]);
 
   const updateClusters = () => {
     if (!map.current || !superclusterRef.current) return;
@@ -151,7 +167,9 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
         // This is a cluster
         const clusterMarker = createClusterMarker(
           cluster.properties.point_count,
-          cluster.properties.cluster_id
+          cluster.properties.cluster_id,
+          lng,
+          lat
         );
         
         const marker = new mapboxgl.Marker(clusterMarker)
@@ -173,7 +191,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
     });
   };
 
-  const createClusterMarker = (pointCount: number, clusterId: number) => {
+  const createClusterMarker = (pointCount: number, clusterId: number, lng: number, lat: number) => {
     const size = pointCount < 10 ? 40 : pointCount < 100 ? 50 : 60;
     
     const markerElement = document.createElement('div');
@@ -200,7 +218,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
       if (superclusterRef.current) {
         const expansionZoom = superclusterRef.current.getClusterExpansionZoom(clusterId);
         map.current?.easeTo({
-          center: [0, 0], // Will be set by the cluster coordinates
+          center: [lng, lat],
           zoom: expansionZoom,
           duration: 500,
         });
@@ -236,7 +254,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
 
   // Update markers based on loaded events
   useEffect(() => {
-    if (!map.current || !hasApiKey || !superclusterRef.current) return;
+    if (!map.current || !isMapboxConfigured || !superclusterRef.current) return;
 
     // Convert events to GeoJSON format for supercluster
     const points = events.map(event => ({
@@ -255,17 +273,38 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
     
     // Update clusters
     updateClusters();
-  }, [events, selectedYear, hasApiKey, onEventSelect]);
+  }, [events, selectedYear, isMapboxConfigured, onEventSelect]);
 
-  if (!hasApiKey) {
+  if (isCheckingConfig) {
+    return (
+      <div className="relative w-full h-screen bg-gradient-ocean flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-sm text-muted-foreground">Checking server configuration...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isMapboxConfigured) {
     return (
       <div className="relative w-full h-screen bg-gradient-ocean flex items-center justify-center">
         <Card className="p-8 max-w-md w-full mx-4 bg-card/95 backdrop-blur-sm border-border/50">
           <div className="text-center space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">Connect to Mapbox</h2>
+            <h2 className="text-2xl font-bold text-foreground">Mapbox Configuration Required</h2>
             <p className="text-muted-foreground">
-              To display the interactive historical map with clustering, please enter your Mapbox public token. 
-              You can find it at{' '}
+              The interactive map requires a Mapbox API key to be configured on the server. 
+              Please add your Mapbox public token to the server's environment variables.
+            </p>
+            <div className="bg-muted p-4 rounded-lg text-left">
+              <p className="text-sm font-mono">
+                1. Create a <code>.env</code> file in the server directory<br/>
+                2. Add: <code>MAPBOX_ACCESS_TOKEN=your_token_here</code><br/>
+                3. Restart the server
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Get your token at{' '}
               <a 
                 href="https://mapbox.com/" 
                 target="_blank" 
@@ -275,22 +314,6 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
                 mapbox.com
               </a>
             </p>
-            <div className="space-y-3">
-              <Input
-                type="text"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Enter your Mapbox public token"
-                className="transition-all duration-300 focus:ring-2 focus:ring-accent/50"
-              />
-              <Button 
-                onClick={saveApiKey}
-                disabled={!apiKey.trim()}
-                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
-              >
-                Connect Map
-              </Button>
-            </div>
           </div>
         </Card>
       </div>

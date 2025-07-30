@@ -13,8 +13,8 @@ class SummaryService {
   private baseUrl: string;
 
   private constructor() {
-    // Use Supabase Edge Function for summary generation
-    this.baseUrl = `${window.location.origin}/functions/v1`;
+    // Use backend API for summary generation
+    this.baseUrl = 'http://localhost:3001/api';
   }
 
   static getInstance(): SummaryService {
