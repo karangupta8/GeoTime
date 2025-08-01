@@ -129,27 +129,8 @@ export class HistoryDataService {
   }
 
   private getFallbackEvents(year: number): HistoricalEvent[] {
-    // Fallback demo events when API is unavailable
-    const fallbackEvents = [
-      {
-        id: "fallback_moon_landing_1969",
-        title: "Apollo 11 Moon Landing",
-        date: "1969-07-20",
-        location: {
-          latitude: 28.6139,
-          longitude: -80.6081,
-          name: "Kennedy Space Center, Florida"
-        },
-        description: "The first manned moon landing mission (fallback data).",
-        category: "Science",
-        images: [],
-        wikipediaUrl: "https://en.wikipedia.org/wiki/Apollo_11",
-        sources: ["Fallback Data"],
-        verified: false
-      }
-    ];
-
-    return fallbackEvents.filter(event => {
+    // Use the comprehensive demo events as fallback
+    return this.demoEvents.filter(event => {
       const eventYear = new Date(event.date).getFullYear();
       return eventYear === year;
     });
