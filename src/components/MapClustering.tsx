@@ -29,7 +29,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
   useEffect(() => {
     const checkMapboxConfig = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/mapbox/config');
+        const response = await fetch('/api/mapbox/config');
         const data = await response.json();
         setIsMapboxConfigured(data.configured);
         
@@ -69,7 +69,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
         sources: {
           'mapbox-tiles': {
             type: 'raster',
-            tiles: ['http://localhost:3001/api/mapbox/tiles/{z}/{x}/{y}?style=dark-v11'],
+            tiles: ['/api/mapbox/tiles/{z}/{x}/{y}?style=dark-v11'],
             tileSize: 512,
           },
         },

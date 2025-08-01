@@ -14,7 +14,7 @@ class SummaryService {
 
   private constructor() {
     // Use backend API for summary generation
-    this.baseUrl = 'http://localhost:3001/api';
+    this.baseUrl = '/api';
   }
 
   static getInstance(): SummaryService {
