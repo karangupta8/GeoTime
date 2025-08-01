@@ -370,6 +370,25 @@
     "verified": true
   },
   {
+    "id": "lend_lease_act_1941",
+    "title": "Lend-Lease Act Signed",
+    "date": "1941-03-11",
+    "location": {
+      "latitude": 38.8951,
+      "longitude": -77.0364,
+      "name": "Washington, D.C., USA"
+    },
+    "description": "President Franklin D. Roosevelt signed the Lend-Lease Act, providing U.S. military aid to foreign nations during World War II.",
+    "category": "Politics",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Lend-Lease",
+    "sources": [
+      "Historical Archives",
+      "Demo Data"
+    ],
+    "verified": true
+  },
+  {
     "id": "operation_barbarossa_1941",
     "title": "Operation Barbarossa Begins",
     "date": "1941-06-22",
@@ -382,6 +401,59 @@
     "category": "War",
     "images": [],
     "wikipediaUrl": "https://en.wikipedia.org/wiki/Operation_Barbarossa",
+    "sources": ["Military Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "atlantic_charter_1941",
+    "title": "Atlantic Charter Issued",
+    "date": "1941-08-14",
+    "location": {
+      "latitude": 47.3758,
+      "longitude": -54.0825,
+      "name": "Placentia Bay, Newfoundland"
+    },
+    "description": "A pivotal policy statement issued by Winston Churchill and Franklin D. Roosevelt that defined the Allied goals for the post-war world.",
+    "category": "Politics",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Atlantic_Charter",
+    "sources": [
+      "Historical Archives",
+      "Demo Data"
+    ],
+    "verified": true
+  },
+  {
+    "id": "siege_of_leningrad_1941",
+    "title": "Siege of Leningrad Begins",
+    "date": "1941-09-08",
+    "endDate": "1944-01-27",
+    "location": {
+      "latitude": 59.9343,
+      "longitude": 30.3351,
+      "name": "Leningrad, Soviet Union"
+    },
+    "description": "The prolonged military blockade of Leningrad by German, Finnish, and Spanish Blue Division forces during World War II. The siege was one of the longest and most destructive in history.",
+    "category": "War",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Siege_of_Leningrad",
+    "sources": ["Military Archives", "Demo Data"],
+    "verified": true
+  },
+  {
+    "id": "battle_of_moscow_1941",
+    "title": "Battle of Moscow Begins",
+    "date": "1941-09-30",
+    "endDate": "1942-01-07",
+    "location": {
+      "latitude": 55.7558,
+      "longitude": 37.6173,
+      "name": "Moscow, Soviet Union"
+    },
+    "description": "A military campaign that consisted of two periods of strategically significant fighting on a 600 km sector of the Eastern Front during World War II. The Soviet defensive effort frustrated Hitler's attack on Moscow.",
+    "category": "War",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Battle_of_Moscow",
     "sources": ["Military Archives", "Demo Data"],
     "verified": true
   },
