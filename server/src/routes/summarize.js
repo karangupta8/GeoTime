@@ -2,7 +2,20 @@ import express from 'express';
 import LLMService from '../services/llmService.js';
 
 const router = express.Router();
-const llmService = new LLMService();
+let llmService = null;
+
+// Initialize LLM service lazily to avoid startup validation errors
+const getLLMService = () => {
+  if (!llmService) {
+    try {
+      llmService = new LLMService();
+    } catch (error) {
+      console.warn('LLM service initialization failed:', error.message);
+      return null;
+    }
+  }
+  return llmService;
+};
 
 // Generate AI summary for historical events
 router.post('/', async (req, res) => {
@@ -19,11 +32,21 @@ router.post('/', async (req, res) => {
     
     // Try to generate summary with configured LLM
     let result;
-    try {
-      result = await llmService.generateSummary(title, description);
-    } catch (llmError) {
-      console.warn('LLM API failed, using fallback:', llmError.message);
-      result = llmService.generateFallbackSummary(title, description);
+    const service = getLLMService();
+    if (service) {
+      try {
+        result = await service.generateSummary(title, description);
+      } catch (llmError) {
+        console.warn('LLM API failed, using fallback:', llmError.message);
+        result = service.generateFallbackSummary(title, description);
+      }
+    } else {
+      // Use fallback if LLM service is not available
+      result = {
+        summary: description.length > 100 ? description.substring(0, 97) + '...' : description,
+        provider: 'fallback',
+        model: 'none'
+      };
     }
     
     res.json({

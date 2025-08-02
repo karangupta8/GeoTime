@@ -9,7 +9,10 @@ class LLMService {
 
   validateConfiguration() {
     const provider = this.provider;
-    if (provider === 'openai') {
+    if (provider === 'fallback') {
+      // Fallback mode doesn't require API keys
+      return;
+    } else if (provider === 'openai') {
       if (!config.apis.llm.openai.apiKey || config.apis.llm.openai.apiKey.includes('your_openai')) {
         throw new Error('OpenAI API key not configured in config.js');
       }
@@ -27,6 +30,8 @@ class LLMService {
       console.log(`Generating summary using ${this.provider} for: ${title}`);
       
       switch (this.provider) {
+        case 'fallback':
+          return this.generateFallbackSummary(title, description);
         case 'openai':
           return await this.generateOpenAISummary(title, description);
         case 'anthropic':
