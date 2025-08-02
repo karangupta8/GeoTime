@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { HistoryDataService } from '@/services/HistoryDataService';
 import { HistoricalEvent } from '@/types/HistoricalEvent';
+import API_CONFIG from '@/config/api';
 
 interface MapProps {
   selectedYear: number;
@@ -31,7 +32,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
   useEffect(() => {
     const fetchMapboxConfig = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/mapbox/config');
+        const response = await fetch(API_CONFIG.getUrl('mapbox/config'));
         if (!response.ok) {
           throw new Error(`Failed to fetch Mapbox config: ${response.status}`);
         }

@@ -1,4 +1,5 @@
 import { HistoricalEvent } from '@/types/HistoricalEvent';
+import API_CONFIG from '@/config/api';
 
 export interface EventSummary {
   id: string;
@@ -13,8 +14,8 @@ class SummaryService {
   private baseUrl: string;
 
   private constructor() {
-    // Use local server API for summary generation
-    this.baseUrl = 'http://localhost:3001/api';
+    // Use centralized API configuration
+    this.baseUrl = API_CONFIG.baseUrl;
   }
 
   static getInstance(): SummaryService {
@@ -28,7 +29,7 @@ class SummaryService {
     try {
       console.log('Generating summary for event:', event.title);
       
-      const response = await fetch(`${this.baseUrl}/summarize`, {
+      const response = await fetch(API_CONFIG.getUrl('summarize'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
