@@ -1,9 +1,9 @@
 import { HistoricalEvent, DataSourceConfig } from '@/types/HistoricalEvent';
+import API_CONFIG from '@/config/api';
 
 export class HistoryDataService {
   private static instance: HistoryDataService;
-  private baseUrl = '/api';
-  //private baseUrl = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/+$/, '');
+  private baseUrl = API_CONFIG.baseUrl;
   private cache = new Map<string, { data: HistoricalEvent[], timestamp: number }>();
   private cacheExpiry = 5 * 60 * 1000; // 5 minutes for frontend cache
   
