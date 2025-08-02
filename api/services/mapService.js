@@ -2,7 +2,13 @@ import { config } from '../config/config.js';
 
 class MapService {
   constructor() {
-    // No validation needed for static config
+    this.validateConfiguration();
+  }
+
+  validateConfiguration() {
+    if (!config.apis.mapbox.publicToken || config.apis.mapbox.publicToken.includes('your_mapbox')) {
+      throw new Error('Mapbox public token not configured in config.js');
+    }
   }
 
   // Get Mapbox configuration for frontend
