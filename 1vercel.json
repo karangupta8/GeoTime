@@ -2,8 +2,25 @@
 {
   "rewrites": [
     {
+      "source": "/api/events",
+      "destination": "/api/events.js"
+    },
+    {
+      "source": "/api/mapbox/config",
+      "destination": "/api/mapbox/config.js"
+    },
+    {
+      "source": "/api/summarize",
+      "destination": "/api/summarize.js"
+    },
+    {
       "source": "/api/(.*)",
-      "destination": "/api"
+      "destination": "/api/$1.js"
     }
-  ]
+  ],
+  "functions": {
+    "api/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  }
 }
