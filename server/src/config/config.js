@@ -5,13 +5,13 @@ export const config = {
   // API Keys Configuration
   apis: {
     mapbox: {
-      publicToken: 'pk.your_mapbox_public_token_here',
+      publicToken: 'pk.eyJ1Ijoia2FyYW5ndXB0YTgiLCJhIjoiY21kam8zdm5oMGhoNTJyczU3aGtiZTcwMiJ9.BZfMMtGuqqoXp7PjG4QCmg',
       secretToken: 'sk.your_mapbox_secret_token_here' // Optional for advanced features
     },
     llm: {
       provider: 'openai', // 'openai' | 'anthropic' | 'local'
       openai: {
-        apiKey: 'sk-your_openai_api_key_here',
+        apiKey: 'pk.eyJ1Ijoia2FyYW5ndXB0YTgiLCJhIjoiY21kam8zdm5oMGhoNTJyczU3aGtiZTcwMiJ9.BZfMMtGuqqoXp7PjG4QCmg',
         model: 'gpt-4o-mini',
         maxTokens: 150,
         temperature: 0.7
@@ -29,7 +29,7 @@ export const config = {
   server: {
     port: process.env.PORT || 3001,
     cors: {
-      origins: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+      origins: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:8080'],
       credentials: true
     },
     rateLimit: {
