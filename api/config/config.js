@@ -1,17 +1,10 @@
-// server/src/config/config.js
-
-import dotenv from 'dotenv';
-
-// Try loading .env file
-try {
-  dotenv.config();
-  console.log('[config] .env file loaded');
-} catch (err) {
-  console.warn('[config] Failed to load .env file. Falling back to default values.');
-}
+// Simplified config for Vercel deployment
 
 // Helper to get env var or fallback
-const getEnv = (key, fallback) => process.env[key] || fallback;
+const getEnv = (key, fallback) => {
+  const value = process.env[key];
+  return value !== undefined ? value : fallback;
+};
 
 export const config = {
   apis: {
@@ -20,7 +13,7 @@ export const config = {
       secretToken: getEnv('MAPBOX_SECRET_TOKEN', 'sk.your_default_mapbox_secret_token')
     },
     llm: {
-      provider: getEnv('LLM_PROVIDER', 'openai'), // openai | anthropic | local
+      provider: getEnv('LLM_PROVIDER', 'fallback'),
       openai: {
         apiKey: getEnv('OPENAI_API_KEY', 'sk-your_openai_key'),
         model: getEnv('OPENAI_MODEL', 'gpt-4o-mini'),
@@ -36,21 +29,9 @@ export const config = {
     }
   },
 
-  server: {
-    port: parseInt(getEnv('PORT', '3001')),
-    cors: {
-      origins: getEnv('ALLOWED_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,https://geo-time.vercel.app').split(','),
-      credentials: true
-    },
-    rateLimit: {
-      windowMs: 15 * 60 * 1000,
-      max: parseInt(getEnv('RATE_LIMIT_MAX', '100'))
-    }
-  },
-
-  environment: getEnv('NODE_ENV', 'development'),
-  isDevelopment: getEnv('NODE_ENV', 'development') !== 'production',
-  isProduction: getEnv('NODE_ENV', 'development') === 'production'
+  environment: getEnv('NODE_ENV', 'production'),
+  isDevelopment: getEnv('NODE_ENV', 'production') !== 'production',
+  isProduction: getEnv('NODE_ENV', 'production') === 'production'
 };
 
 export const validateConfig = () => {

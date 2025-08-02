@@ -1,35 +1,67 @@
 import WikipediaService from './WikipediaService.js';
-import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const demoEventsPath = join(__dirname, '../data/demoEvents.json');
-
-let demoEvents = [];
-try {
-  console.log(`Attempting to load demo events from: ${demoEventsPath}`);
-  const jsonData = readFileSync(demoEventsPath, 'utf8');
-  demoEvents = JSON.parse(jsonData);
-  console.log(`✅ Successfully loaded ${demoEvents.length} demo events from JSON file`);
-  
-  // Log sample of events for verification
-  if (demoEvents.length > 0) {
-    const sampleEvents = demoEvents.slice(0, 3).map(e => ({
-      id: e.id,
-      title: e.title,
-      date: e.date,
-      year: new Date(e.date).getFullYear()
-    }));
-    console.log('Sample events:', sampleEvents);
+// Demo events data - embedded directly to avoid file reading issues
+const demoEvents = [
+  {
+    id: 'moon_landing_1969',
+    title: 'Apollo 11 Moon Landing',
+    date: '1969-07-20',
+    location: { latitude: 28.6139, longitude: -80.6081, name: 'Kennedy Space Center, Florida' },
+    description: 'The first manned moon landing mission, with Neil Armstrong and Buzz Aldrin becoming the first humans to walk on the lunar surface.',
+    category: 'Science',
+    images: [],
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/Apollo_11',
+    sources: ['NASA', 'Demo Data'],
+    verified: true
+  },
+  {
+    id: 'woodstock_1969',
+    title: 'Woodstock Music Festival',
+    date: '1969-08-15',
+    endDate: '1969-08-18',
+    location: { latitude: 41.7014, longitude: -74.3535, name: 'Bethel, New York' },
+    description: 'A pivotal moment in music history, featuring performances by Jimi Hendrix, Janis Joplin, and many other legendary artists.',
+    category: 'Culture',
+    images: [],
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/Woodstock',
+    sources: ['Historical Records', 'Demo Data'],
+    verified: true
+  },
+  {
+    id: 'internet_arpanet_1969',
+    title: 'First ARPANET Connection',
+    date: '1969-10-29',
+    location: { latitude: 34.0522, longitude: -118.2437, name: 'UCLA, Los Angeles' },
+    description: 'The first host-to-host message sent over ARPANET, the precursor to the modern internet.',
+    category: 'Technology',
+    images: [],
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/ARPANET',
+    sources: ['UCLA', 'Demo Data'],
+    verified: true
+  },
+  {
+    id: 'berlin_wall_1989',
+    title: 'Fall of the Berlin Wall',
+    date: '1989-11-09',
+    location: { latitude: 52.5163, longitude: 13.3777, name: 'Berlin, Germany' },
+    description: 'The Berlin Wall, a symbol of the Cold War division, was torn down by East and West Berliners, marking the beginning of German reunification.',
+    category: 'Political',
+    sources: ['Demo Data'],
+    verified: false,
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/Fall_of_the_Berlin_Wall'
+  },
+  {
+    id: 'great_fire_london_1666',
+    title: 'Great Fire of London',
+    date: '1666-09-02',
+    location: { latitude: 51.5122, longitude: -0.0955, name: 'London, England' },
+    description: 'A major conflagration that swept through the medieval City of London, destroying 13,200 houses and 87 churches.',
+    category: 'Disaster',
+    sources: ['Demo Data'],
+    verified: false,
+    wikipediaUrl: 'https://en.wikipedia.org/wiki/Great_Fire_of_London'
   }
-} catch (error) {
-  console.error('❌ Error loading demo events:', error);
-  console.error('File path:', demoEventsPath);
-  console.error('Current working directory:', process.cwd());
-  demoEvents = [];
-}
+];
 
 class DataService {
   constructor() {
