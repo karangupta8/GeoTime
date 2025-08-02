@@ -151,10 +151,14 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
         // This is a cluster
         const clusterMarker = createClusterMarker(
           cluster.properties.point_count,
-          cluster.properties.cluster_id
+          cluster.properties.cluster_id,
+          [lng, lat]
         );
         
-        const marker = new mapboxgl.Marker(clusterMarker)
+        const marker = new mapboxgl.Marker({
+          element: clusterMarker,
+          anchor: 'center'
+        })
           .setLngLat([lng, lat])
           .addTo(map.current!);
 
@@ -164,7 +168,10 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
         const event = cluster.properties as HistoricalEvent;
         const eventMarker = createEventMarker(event);
         
-        const marker = new mapboxgl.Marker(eventMarker)
+        const marker = new mapboxgl.Marker({
+          element: eventMarker,
+          anchor: 'center'
+        })
           .setLngLat([lng, lat])
           .addTo(map.current!);
 
@@ -173,7 +180,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
     });
   };
 
-  const createClusterMarker = (pointCount: number, clusterId: number) => {
+  const createClusterMarker = (pointCount: number, clusterId: number, coordinates: [number, number]) => {
     const size = pointCount < 10 ? 40 : pointCount < 100 ? 50 : 60;
     
     const markerElement = document.createElement('div');
@@ -193,14 +200,15 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
       cursor: pointer;
       box-shadow: 0 0 20px hsl(var(--historical-gold) / 0.5);
       transition: all 0.3s ease;
+      transform-origin: center center;
     `;
     markerElement.textContent = pointCount.toString();
 
     markerElement.addEventListener('click', () => {
-      if (superclusterRef.current) {
+      if (superclusterRef.current && map.current) {
         const expansionZoom = superclusterRef.current.getClusterExpansionZoom(clusterId);
-        map.current?.easeTo({
-          center: [0, 0], // Will be set by the cluster coordinates
+        map.current.easeTo({
+          center: coordinates,
           zoom: expansionZoom,
           duration: 500,
         });
