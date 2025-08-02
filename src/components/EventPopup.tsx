@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin, ExternalLink, Verified, Sparkles } from 'lucide-react';
@@ -107,14 +107,16 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, isOpen, onClose, onSumma
           
           <div className="pt-4 border-t border-border/50 space-y-3">
             {onSummarizeEvent && (
-              <Button 
-                variant="outline"
-                className="w-full border-accent/50 text-accent hover:bg-accent/10"
-                onClick={() => onSummarizeEvent(event)}
-              >
-                <Sparkles className="w-4 h-4 mr-2" />
-                Summarize Event
-              </Button>
+              <DialogClose asChild>
+                <Button 
+                  variant="outline"
+                  className="w-full border-accent/50 text-accent hover:bg-accent/10"
+                  onClick={() => onSummarizeEvent(event)}
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Summarize Event
+                </Button>
+              </DialogClose>
             )}
             
             <Button 

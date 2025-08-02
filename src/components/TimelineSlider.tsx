@@ -56,6 +56,15 @@ const TimelineSlider: React.FC<TimelineSliderProps> = ({ selectedYear, onYearCha
     setInputError('');
   };
 
+  const handleStartYearBlur = () => {
+    const start = parseInt(startYear);
+    if (!isNaN(start)) {
+      const newEnd = Math.min(start + 4, maxYear);
+      setEndYear(newEnd.toString());
+      setInputError('');
+    }
+  };
+
   const handleRangeSubmit = () => {
     const start = parseInt(startYear);
     const end = parseInt(endYear);
@@ -136,6 +145,7 @@ const TimelineSlider: React.FC<TimelineSliderProps> = ({ selectedYear, onYearCha
                 value={startYear}
                 onChange={(e) => handleInputChange('start', e.target.value)}
                 onKeyPress={(e) => handleKeyPress(e, 'start')}
+                onBlur={handleStartYearBlur}
                 placeholder="Start"
                 className={`${inputError ? 'border-destructive' : ''}`}
               />
