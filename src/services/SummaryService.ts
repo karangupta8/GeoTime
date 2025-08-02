@@ -13,8 +13,8 @@ class SummaryService {
   private baseUrl: string;
 
   private constructor() {
-    // Use Supabase Edge Function for summary generation
-    this.baseUrl = `${window.location.origin}/functions/v1`;
+    // Use local server API for summary generation
+    this.baseUrl = 'http://localhost:3001/api';
   }
 
   static getInstance(): SummaryService {
@@ -28,7 +28,7 @@ class SummaryService {
     try {
       console.log('Generating summary for event:', event.title);
       
-      const response = await fetch(`${this.baseUrl}/summarize-event`, {
+      const response = await fetch(`${this.baseUrl}/summarize`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

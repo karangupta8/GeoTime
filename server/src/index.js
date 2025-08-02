@@ -2,27 +2,35 @@ import express from 'express';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import eventsRouter from './routes/events.js';
+import mapboxRouter from './routes/mapbox.js';
+import summarizeRouter from './routes/summarize.js';
+import { config, validateConfig } from './config/config.js';
 
 const app = express();
-const PORT = process.env.PORT || 3001;
 
-// Rate limiting
+// Validate configuration on startup
+console.log('Validating server configuration...');
+validateConfig();
+
+// Rate limiting with config
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: config.server.rateLimit.windowMs,
+  max: config.server.rateLimit.max,
   message: 'Too many requests from this IP, please try again later.'
 });
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
-  credentials: true
+  origin: config.server.cors.origins,
+  credentials: config.server.cors.credentials
 }));
 app.use(express.json());
 app.use(limiter);
 
 // Routes
-app.use('/api', eventsRouter);
+app.use('/api/events', eventsRouter);
+app.use('/api/mapbox', mapboxRouter);
+app.use('/api/summarize', summarizeRouter);
 
 // Health check
 app.get('/health', (req, res) => {
@@ -38,8 +46,14 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`GeoTime API server running on port ${PORT}`);
-  console.log(`Server health check available at http://localhost:${PORT}/health`);
-  console.log(`API endpoints available at http://localhost:${PORT}/api`);
+app.listen(config.server.port, () => {
+  console.log(`GeoTime API server running on port ${config.server.port}`);
+  console.log(`Environment: ${config.environment}`);
+  console.log(`LLM Provider: ${config.apis.llm.provider}`);
+  console.log(`Server health check available at http://localhost:${config.server.port}/health`);
+  console.log(`API endpoints available at http://localhost:${config.server.port}/api`);
+  console.log('Available endpoints:');
+  console.log(`  - GET  /api/events - Historical events`);
+  console.log(`  - GET  /api/mapbox/config - Mapbox configuration`);
+  console.log(`  - POST /api/summarize - Generate AI summaries`);
 });

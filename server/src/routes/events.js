@@ -5,7 +5,7 @@ const router = express.Router();
 const dataService = new DataService();
 
 // Get historical events by year
-router.get('/events', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const { year, category, limit = 50 } = req.query;
     
@@ -36,7 +36,7 @@ router.get('/events', async (req, res) => {
 });
 
 // Get event by ID
-router.get('/events/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
     const event = await dataService.getEventById(req.params.id);
     

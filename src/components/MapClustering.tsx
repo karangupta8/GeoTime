@@ -19,47 +19,52 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const superclusterRef = useRef<Supercluster | null>(null);
-  const [apiKey, setApiKey] = useState<string>('');
-  const [hasApiKey, setHasApiKey] = useState<boolean>(false);
+  const [mapboxConfig, setMapboxConfig] = useState<any>(null);
+  const [hasMapboxConfig, setHasMapboxConfig] = useState<boolean>(false);
   const [events, setEvents] = useState<HistoricalEvent[]>([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const historyService = HistoryDataService.getInstance();
 
-  // Check if user has Mapbox API key
+  // Fetch Mapbox configuration from server
   useEffect(() => {
-    const savedKey = localStorage.getItem('mapbox_api_key');
-    if (savedKey) {
-      setApiKey(savedKey);
-      setHasApiKey(true);
-    }
-  }, []);
+    const fetchMapboxConfig = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/mapbox/config');
+        if (!response.ok) {
+          throw new Error(`Failed to fetch Mapbox config: ${response.status}`);
+        }
+        const data = await response.json();
+        setMapboxConfig(data.config);
+        setHasMapboxConfig(true);
+      } catch (error) {
+        console.error('Error fetching Mapbox config:', error);
+        setError(error instanceof Error ? error.message : 'Failed to load Mapbox configuration');
+        toast({
+          title: "Configuration Error",
+          description: "Failed to load Mapbox configuration from server. Please check server setup.",
+          variant: "destructive",
+        });
+      }
+    };
 
-  const saveApiKey = () => {
-    if (apiKey.trim()) {
-      localStorage.setItem('mapbox_api_key', apiKey.trim());
-      setHasApiKey(true);
-      toast({
-        title: "API Key Saved",
-        description: "Mapbox API key saved successfully. Initializing map...",
-      });
-    }
-  };
+    fetchMapboxConfig();
+  }, [toast]);
 
   useEffect(() => {
-    if (!mapContainer.current || !hasApiKey) return;
+    if (!mapContainer.current || !hasMapboxConfig || !mapboxConfig) return;
 
-    // Initialize map
-    mapboxgl.accessToken = localStorage.getItem('mapbox_api_key') || '';
+    // Initialize map with server-provided configuration
+    mapboxgl.accessToken = mapboxConfig.publicToken;
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/dark-v11',
-      projection: 'globe' as any,
-      zoom: 2,
-      center: [20, 40],
-      pitch: 0,
+      style: mapboxConfig.defaultStyle,
+      projection: mapboxConfig.projection as any,
+      zoom: mapboxConfig.zoom,
+      center: mapboxConfig.center,
+      pitch: mapboxConfig.pitch,
     });
 
     // Add navigation controls
@@ -95,11 +100,11 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
       markersRef.current = [];
       map.current?.remove();
     };
-  }, [hasApiKey]);
+  }, [hasMapboxConfig, mapboxConfig]);
 
   // Load historical events for the selected year
   useEffect(() => {
-    if (!hasApiKey) return;
+    if (!hasMapboxConfig) return;
 
     const loadEvents = async () => {
       setIsLoadingEvents(true);
@@ -123,7 +128,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
     };
 
     loadEvents();
-  }, [selectedYear, hasApiKey, historyService, toast]);
+  }, [selectedYear, hasMapboxConfig, historyService, toast]);
 
   const updateClusters = () => {
     if (!map.current || !superclusterRef.current) return;
@@ -244,7 +249,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
 
   // Update markers based on loaded events
   useEffect(() => {
-    if (!map.current || !hasApiKey || !superclusterRef.current) return;
+    if (!map.current || !hasMapboxConfig || !superclusterRef.current) return;
 
     // Convert events to GeoJSON format for supercluster
     const points = events.map(event => ({
@@ -263,42 +268,24 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
     
     // Update clusters
     updateClusters();
-  }, [events, selectedYear, hasApiKey, onEventSelect]);
+  }, [events, selectedYear, hasMapboxConfig, onEventSelect]);
 
-  if (!hasApiKey) {
+  if (!hasMapboxConfig) {
     return (
       <div className="relative w-full h-screen bg-gradient-ocean flex items-center justify-center">
         <Card className="p-8 max-w-md w-full mx-4 bg-card/95 backdrop-blur-sm border-border/50">
           <div className="text-center space-y-4">
-            <h2 className="text-2xl font-bold text-foreground">Connect to Mapbox</h2>
+            <h2 className="text-2xl font-bold text-foreground">Loading Map Configuration</h2>
             <p className="text-muted-foreground">
-              To display the interactive historical map with clustering, please enter your Mapbox public token. 
-              You can find it at{' '}
-              <a 
-                href="https://mapbox.com/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-accent hover:underline"
-              >
-                mapbox.com
-              </a>
+              Loading Mapbox configuration from server...
             </p>
-            <div className="space-y-3">
-              <Input
-                type="text"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Enter your Mapbox public token"
-                className="transition-all duration-300 focus:ring-2 focus:ring-accent/50"
-              />
-              <Button 
-                onClick={saveApiKey}
-                disabled={!apiKey.trim()}
-                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
-              >
-                Connect Map
-              </Button>
-            </div>
+            {error ? (
+              <div className="text-destructive text-sm">
+                {error}
+              </div>
+            ) : (
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+            )}
           </div>
         </Card>
       </div>
