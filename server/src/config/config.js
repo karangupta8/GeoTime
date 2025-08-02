@@ -1,72 +1,79 @@
-// Centralized configuration for all API keys and settings
-// Change these values to configure your API keys and providers
+// server/src/config/config.js
+
+import dotenv from 'dotenv';
+
+// Try loading .env file
+try {
+  dotenv.config();
+  console.log('[config] .env file loaded');
+} catch (err) {
+  console.warn('[config] Failed to load .env file. Falling back to default values.');
+}
+
+// Helper to get env var or fallback
+const getEnv = (key, fallback) => process.env[key] || fallback;
 
 export const config = {
-  // API Keys Configuration
   apis: {
     mapbox: {
-      publicToken: 'pk.eyJ1Ijoia2FyYW5ndXB0YTgiLCJhIjoiY21kam8zdm5oMGhoNTJyczU3aGtiZTcwMiJ9.BZfMMtGuqqoXp7PjG4QCmg',
-      secretToken: 'sk.your_mapbox_secret_token_here' // Optional for advanced features
+      publicToken: getEnv('MAPBOX_PUBLIC_TOKEN', 'pk.eyJ1Ijoia2FyYW5ndXB0YTgiLCJhIjoiY21kam8zdm5oMGhoNTJyczU3aGtiZTcwMiJ9.BZfMMtGuqqoXp7PjG4QCmg'),
+      secretToken: getEnv('MAPBOX_SECRET_TOKEN', 'sk.your_default_mapbox_secret_token')
     },
     llm: {
-      provider: 'openai', // 'openai' | 'anthropic' | 'local'
+      provider: getEnv('LLM_PROVIDER', 'openai'), // openai | anthropic | local
       openai: {
-        apiKey: 'pk.eyJ1Ijoia2FyYW5ndXB0YTgiLCJhIjoiY21kam8zdm5oMGhoNTJyczU3aGtiZTcwMiJ9.BZfMMtGuqqoXp7PjG4QCmg',
-        model: 'gpt-4o-mini',
-        maxTokens: 150,
-        temperature: 0.7
+        apiKey: getEnv('OPENAI_API_KEY', 'sk-your_openai_key'),
+        model: getEnv('OPENAI_MODEL', 'gpt-4o-mini'),
+        maxTokens: parseInt(getEnv('OPENAI_MAX_TOKENS', '150')),
+        temperature: parseFloat(getEnv('OPENAI_TEMPERATURE', '0.7'))
       },
       anthropic: {
-        apiKey: 'sk-ant-your_anthropic_api_key_here',
-        model: 'claude-3-haiku-20240307',
-        maxTokens: 150,
-        temperature: 0.7
+        apiKey: getEnv('ANTHROPIC_API_KEY', 'sk-ant-your_anthropic_api_key'),
+        model: getEnv('ANTHROPIC_MODEL', 'claude-3-haiku-20240307'),
+        maxTokens: parseInt(getEnv('ANTHROPIC_MAX_TOKENS', '150')),
+        temperature: parseFloat(getEnv('ANTHROPIC_TEMPERATURE', '0.7'))
       }
     }
   },
 
-  // Server Configuration
   server: {
-    port: process.env.PORT || 3001,
+    port: parseInt(getEnv('PORT', '3001')),
     cors: {
-      origins: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:8080'],
+      origins: getEnv('ALLOWED_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,https://geo-time.vercel.app').split(','),
       credentials: true
     },
     rateLimit: {
-      windowMs: 15 * 60 * 1000, // 15 minutes
-      max: 100 // requests per window
+      windowMs: 15 * 60 * 1000,
+      max: parseInt(getEnv('RATE_LIMIT_MAX', '100'))
     }
   },
 
-  // Environment Detection
-  environment: process.env.NODE_ENV || 'development',
-  isDevelopment: process.env.NODE_ENV !== 'production',
-  isProduction: process.env.NODE_ENV === 'production'
+  environment: getEnv('NODE_ENV', 'development'),
+  isDevelopment: getEnv('NODE_ENV', 'development') !== 'production',
+  isProduction: getEnv('NODE_ENV', 'development') === 'production'
 };
 
-// Validation helper
 export const validateConfig = () => {
   const errors = [];
 
-  // Check Mapbox token
-  if (!config.apis.mapbox.publicToken || config.apis.mapbox.publicToken.includes('your_mapbox')) {
-    errors.push('Mapbox public token not configured in config.js');
+  const { mapbox, llm } = config.apis;
+
+  if (!mapbox.publicToken || mapbox.publicToken.includes('your_default_mapbox')) {
+    errors.push('Mapbox public token is not properly configured.');
   }
 
-  // Check LLM configuration
-  const provider = config.apis.llm.provider;
-  if (provider === 'openai') {
-    if (!config.apis.llm.openai.apiKey || config.apis.llm.openai.apiKey.includes('your_openai')) {
-      errors.push('OpenAI API key not configured in config.js');
+  if (llm.provider === 'openai') {
+    if (!llm.openai.apiKey || llm.openai.apiKey.includes('your_openai')) {
+      errors.push('OpenAI API key is not properly configured.');
     }
-  } else if (provider === 'anthropic') {
-    if (!config.apis.llm.anthropic.apiKey || config.apis.llm.anthropic.apiKey.includes('your_anthropic')) {
-      errors.push('Anthropic API key not configured in config.js');
+  } else if (llm.provider === 'anthropic') {
+    if (!llm.anthropic.apiKey || llm.anthropic.apiKey.includes('your_anthropic')) {
+      errors.push('Anthropic API key is not properly configured.');
     }
   }
 
   if (errors.length > 0) {
-    console.warn('Configuration warnings:');
+    console.warn('[config] Configuration warnings:');
     errors.forEach(error => console.warn(`- ${error}`));
   }
 
