@@ -21,40 +21,54 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const superclusterRef = useRef<Supercluster | null>(null);
   const [mapboxConfig, setMapboxConfig] = useState<any>(null);
-  const [hasMapboxConfig, setHasMapboxConfig] = useState<boolean>(false);
+  const [hasMapboxConfig, setHasMapboxConfig] = useState(false);
+  const [isLoadingConfig, setIsLoadingConfig] = useState(true);
+  const [configError, setConfigError] = useState<string | null>(null);
   const [events, setEvents] = useState<HistoricalEvent[]>([]);
   const [isLoadingEvents, setIsLoadingEvents] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const historyService = HistoryDataService.getInstance();
 
-  // Fetch Mapbox configuration from server
+  // Load Mapbox configuration from server
   useEffect(() => {
-    const fetchMapboxConfig = async () => {
+    const loadMapboxConfig = async () => {
       try {
-        const response = await fetch('/api/mapbox/config');
+        setIsLoadingConfig(true);
+        setConfigError(null);
+        
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || '/api'}/mapbox/config`);
+        
         if (!response.ok) {
-          throw new Error(`Failed to fetch Mapbox config: ${response.status}`);
+          throw new Error(`Failed to load Mapbox configuration: ${response.status}`);
         }
+        
         const data = await response.json();
+        
+        if (!data.success || !data.config) {
+          throw new Error('Invalid configuration response from server');
+        }
+        
+        // Validate that we have a public token
+        if (!data.config.publicToken) {
+          throw new Error('Mapbox configuration is not properly set up on the server');
+        }
+        
         setMapboxConfig(data.config);
         setHasMapboxConfig(true);
       } catch (error) {
-        console.error('Error fetching Mapbox config:', error);
-        setError(error instanceof Error ? error.message : 'Failed to load Mapbox configuration');
-        toast({
-          title: "Configuration Error",
-          description: "Failed to load Mapbox configuration from server. Please check server setup.",
-          variant: "destructive",
-        });
+        console.error('Error loading Mapbox config:', error);
+        setConfigError(error instanceof Error ? error.message : 'Failed to load map configuration');
+      } finally {
+        setIsLoadingConfig(false);
       }
     };
 
-    fetchMapboxConfig();
-  }, [toast]);
+    loadMapboxConfig();
+  }, []);
 
   useEffect(() => {
-    if (!mapContainer.current || !hasMapboxConfig || !mapboxConfig) return;
+    if (!mapContainer.current || !hasMapboxConfig || !mapboxConfig || isLoadingConfig) return;
 
     // Initialize map with server-provided configuration
     mapboxgl.accessToken = mapboxConfig.publicToken;
@@ -101,7 +115,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
       markersRef.current = [];
       map.current?.remove();
     };
-  }, [hasMapboxConfig, mapboxConfig]);
+  }, [hasMapboxConfig, mapboxConfig, isLoadingConfig]);
 
   // Load historical events for the selected year range
   useEffect(() => {
@@ -272,9 +286,9 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
             <p className="text-muted-foreground">
               Loading Mapbox configuration from server...
             </p>
-            {error ? (
+            {configError ? (
               <div className="text-destructive text-sm">
-                {error}
+                {configError}
               </div>
             ) : (
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>

@@ -4,66 +4,90 @@ import MapService from '../services/mapService.js';
 const router = express.Router();
 const mapService = new MapService();
 
-// Get Mapbox configuration for frontend
+// Get Mapbox configuration (public data only)
 router.get('/config', async (req, res) => {
   try {
-    const config = mapService.getMapboxConfig();
+    const config = mapService.getPublicConfig();
     
     res.json({
       success: true,
-      config
+      config: config
     });
   } catch (error) {
-    console.error('Error getting Mapbox config:', error);
-    res.status(500).json({ 
+    console.error('[MapboxRoute] Config error:', error);
+    res.status(500).json({
+      success: false,
       error: 'Failed to get Mapbox configuration',
-      message: error.message 
+      message: error.message
     });
   }
 });
 
-// Future: Add geocoding endpoint
-router.get('/geocode', async (req, res) => {
+// Server-side geocoding endpoint
+router.post('/geocode', async (req, res) => {
   try {
-    const { query } = req.query;
+    const { query } = req.body;
     
-    if (!query) {
-      return res.status(400).json({ error: 'Query parameter is required' });
+    if (!query || typeof query !== 'string' || query.trim().length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Query parameter is required'
+      });
     }
 
-    // For now, return not implemented
-    res.status(501).json({ 
-      error: 'Server-side geocoding not implemented yet',
-      message: 'Use client-side geocoding with public token for now'
-    });
+    const results = await mapService.geocode(query.trim());
+    
+    res.json(results);
   } catch (error) {
-    console.error('Error geocoding:', error);
-    res.status(500).json({ 
-      error: 'Failed to geocode',
-      message: error.message 
+    console.error('[MapboxRoute] Geocoding error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Geocoding failed',
+      message: error.message
     });
   }
 });
 
-// Future: Add reverse geocoding endpoint
-router.get('/reverse', async (req, res) => {
+// Server-side reverse geocoding endpoint
+router.post('/reverse-geocode', async (req, res) => {
   try {
-    const { lng, lat } = req.query;
+    const { longitude, latitude } = req.body;
     
-    if (!lng || !lat) {
-      return res.status(400).json({ error: 'lng and lat parameters are required' });
+    if (!mapService.validateCoordinates(longitude, latitude)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Valid longitude and latitude are required'
+      });
     }
 
-    // For now, return not implemented
-    res.status(501).json({ 
-      error: 'Server-side reverse geocoding not implemented yet',
-      message: 'Use client-side reverse geocoding with public token for now'
+    const results = await mapService.reverseGeocode(longitude, latitude);
+    
+    res.json(results);
+  } catch (error) {
+    console.error('[MapboxRoute] Reverse geocoding error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Reverse geocoding failed',
+      message: error.message
+    });
+  }
+});
+
+// Get service status
+router.get('/status', async (req, res) => {
+  try {
+    const status = mapService.getServiceStatus();
+    
+    res.json({
+      success: true,
+      status: status
     });
   } catch (error) {
-    console.error('Error reverse geocoding:', error);
-    res.status(500).json({ 
-      error: 'Failed to reverse geocode',
-      message: error.message 
+    console.error('[MapboxRoute] Status error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get service status',
+      message: error.message
     });
   }
 });
