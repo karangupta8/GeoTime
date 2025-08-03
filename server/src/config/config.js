@@ -22,7 +22,7 @@ export const config = {
     llm: {
       provider: getEnv('LLM_PROVIDER', 'openai'), // openai | anthropic | local
       openai: {
-        apiKey: getEnv('OPENAI_API_KEY', 'sk-your_openai_key'),
+        apiKey: getEnv('OPENAI_API_KEY', 'sk.eyJ1Ijoia2FyYW5ndXB0YTgiLCJhIjoiY21kam8zdm5oMGhoNTJyczU3aGtiZTcwMiJ9.BZfMMtGuqqoXp7PjG4QCmg'),
         model: getEnv('OPENAI_MODEL', 'gpt-4o-mini'),
         maxTokens: parseInt(getEnv('OPENAI_MAX_TOKENS', '150')),
         temperature: parseFloat(getEnv('OPENAI_TEMPERATURE', '0.7'))
