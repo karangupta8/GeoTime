@@ -1,5 +1,325 @@
 [
   {
+    "id": "battle_of_stalingrad_1942",
+    "title": "Battle of Stalingrad Begins",
+    "date": "1942-08-23",
+    "location": {
+      "latitude": 48.7067,
+      "longitude": 44.5133,
+      "name": "Stalingrad, Soviet Union"
+    },
+    "description": "The Battle of Stalingrad began, becoming one of the bloodiest battles in history and a turning point on the Eastern Front.",
+    "category": "Military",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Battle_of_Stalingrad",
+    "sources": ["Soviet Archives", "Historical Records"],
+    "verified": true
+  },
+  {
+    "id": "wannsee_conference_1942",
+    "title": "Wannsee Conference",
+    "date": "1942-01-20",
+    "location": {
+      "latitude": 52.4354,
+      "longitude": 13.1939,
+      "name": "Berlin, Germany"
+    },
+    "description": "Nazi officials met to plan the 'Final Solution' for the systematic genocide of Jews during the Holocaust.",
+    "category": "Politics",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Wannsee_Conference",
+    "sources": ["German Archives", "Holocaust Records"],
+    "verified": true
+  },
+  {
+    "id": "first_nuclear_reactor_1942",
+    "title": "First Controlled Nuclear Reaction",
+    "date": "1942-12-02",
+    "location": {
+      "latitude": 41.7922,
+      "longitude": -87.6000,
+      "name": "Chicago, Illinois"
+    },
+    "description": "Enrico Fermi and team achieved the first controlled nuclear chain reaction at the University of Chicago.",
+    "category": "Science",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Chicago_Pile-1",
+    "sources": ["Scientific Archives", "Historical Records"],
+    "verified": true
+  },
+  {
+    "id": "operation_torch_1942",
+    "title": "Operation Torch",
+    "date": "1942-11-08",
+    "location": {
+      "latitude": 33.5731,
+      "longitude": -7.5898,
+      "name": "North Africa"
+    },
+    "description": "Allied forces launched Operation Torch, invading North Africa to fight Axis powers.",
+    "category": "Military",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Operation_Torch",
+    "sources": ["Allied Military Archives", "Historical Records"],
+    "verified": true
+  },
+  {
+    "id": "battle_of_guadalcanal_1942",
+    "title": "Battle of Guadalcanal Begins",
+    "date": "1942-08-07",
+    "location": {
+      "latitude": -9.4300,
+      "longitude": 159.9500,
+      "name": "Guadalcanal, Solomon Islands"
+    },
+    "description": "U.S. forces launched the first major Allied offensive in the Pacific against Japan.",
+    "category": "Military",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Guadalcanal_Campaign",
+    "sources": ["U.S. Military Archives", "Historical Records"],
+    "verified": true
+  },
+  {
+    "id": "v2_rocket_1944",
+    "title": "First V-2 Rocket Attack",
+    "date": "1944-09-08",
+    "location": {
+      "latitude": 51.5074,
+      "longitude": -0.1278,
+      "name": "London, England"
+    },
+    "description": "Germany launched the first V-2 ballistic missile attack on London, introducing advanced rocket technology.",
+    "category": "Military",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/V-2_rocket",
+    "sources": ["German Military Archives", "Historical Records"],
+    "verified": true
+  },
+  {
+    "id": "tehran_conference_1943",
+    "title": "Tehran Conference",
+    "date": "1943-11-28",
+    "location": {
+      "latitude": 35.6895,
+      "longitude": 51.3890,
+      "name": "Tehran, Iran"
+    },
+    "description": "Allied leaders Roosevelt, Churchill, and Stalin met to coordinate strategy for World War II.",
+    "category": "Politics",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Tehran_Conference",
+    "sources": ["Diplomatic Archives", "Historical Records"],
+    "verified": true
+  },
+  {
+    "id": "battle_of_leyte_gulf_1944",
+    "title": "Battle of Leyte Gulf",
+    "date": "1944-10-23",
+    "location": {
+      "latitude": 11.1667,
+      "longitude": 125.0000,
+      "name": "Leyte Gulf, Philippines"
+    },
+    "description": "The largest naval battle in history, where Allied forces crippled the Japanese navy.",
+    "category": "Military",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Battle_of_Leyte_Gulf",
+    "sources": ["U.S. Naval Archives", "Historical Records"],
+    "verified": true
+  },
+  {
+    "id": "bouncing_bomb_1943",
+    "title": "Operation Chastise (Bouncing Bomb)",
+    "date": "1943-05-17",
+    "location": {
+      "latitude": 51.4548,
+      "longitude": 7.4479,
+      "name": "Ruhr Valley, Germany"
+    },
+    "description": "RAF used bouncing bombs to destroy German dams, disrupting industrial production.",
+    "category": "Military",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Operation_Chastise",
+    "sources": ["RAF Archives", "Historical Records"],
+    "verified": true
+  },
+  {
+    "id": "turing_bombe_1941",
+    "title": "Turing's Bombe Operational",
+    "date": "1941-03-18",
+    "location": {
+      "latitude": 51.9965,
+      "longitude": -0.7420,
+      "name": "Bletchley Park, England"
+    },
+    "description": "Alan Turing's Bombe machine began decrypting German Enigma messages, aiding Allied intelligence.",
+    "category": "Technology",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Bombe",
+    "sources": ["Bletchley Park Archives", "Historical Records"],
+    "verified": true
+  },
+  {
+    "id": "pearl_harbor_1941",
+    "title": "Attack on Pearl Harbor",
+    "date": "1941-12-07",
+    "location": {
+      "latitude": 21.3445,
+      "longitude": -157.9751,
+      "name": "Pearl Harbor, Hawaii"
+    },
+    "description": "Japanese forces launched a surprise attack on the U.S. naval base at Pearl Harbor, prompting the United States to enter World War II.",
+    "category": "Military",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Attack_on_Pearl_Harbor",
+    "sources": ["U.S. Naval Archives", "Historical Records"],
+    "verified": true
+  },
+  {
+    "id": "battle_of_midway_1942",
+    "title": "Battle of Midway",
+    "date": "1942-06-04",
+    "location": {
+      "latitude": 28.2000,
+      "longitude": -177.3500,
+      "name": "Midway Atoll"
+    },
+    "description": "A decisive U.S. victory over Japan in the Pacific, marking a turning point in World War II.",
+    "category": "Military",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Battle_of_Midway",
+    "sources": ["Military Archives", "Historical Records"],
+    "verified": true
+  },
+  {
+    "id": "operation_barbarossa_1941",
+    "title": "Operation Barbarossa Launched",
+    "date": "1941-06-22",
+    "location": {
+      "latitude": 55.7558,
+      "longitude": 37.6173,
+      "name": "Eastern Front, Soviet Union"
+    },
+    "description": "Nazi Germany invaded the Soviet Union, initiating the largest military operation in history.",
+    "category": "Military",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Operation_Barbarossa",
+    "sources": ["German Military Archives", "Soviet Records"],
+    "verified": true
+  },
+  {
+    "id": "manhattan_project_1942",
+    "title": "Manhattan Project Begins",
+    "date": "1942-08-13",
+    "location": {
+      "latitude": 35.8801,
+      "longitude": -106.3031,
+      "name": "Los Alamos, New Mexico"
+    },
+    "description": "The U.S. initiated the Manhattan Project to develop the atomic bomb.",
+    "category": "Science",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Manhattan_Project",
+    "sources": ["U.S. Government Archives", "Scientific Records"],
+    "verified": true
+  },
+  {
+    "id": "d_day_1944",
+    "title": "D-Day Invasion",
+    "date": "1944-06-06",
+    "location": {
+      "latitude": 49.3333,
+      "longitude": -0.5667,
+      "name": "Normandy, France"
+    },
+    "description": "Allied forces launched the largest amphibious invasion in history, beginning the liberation of Western Europe from Nazi control.",
+    "category": "Military",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Normandy_landings",
+    "sources": ["Allied Military Archives", "Historical Records"],
+    "verified": true
+  },
+  {
+    "id": "yalta_conference_1945",
+    "title": "Yalta Conference",
+    "date": "1945-02-04",
+    "location": {
+      "latitude": 44.4689,
+      "longitude": 34.1424,
+      "name": "Yalta, Crimea"
+    },
+    "description": "Leaders of the U.S., Soviet Union, and UK met to discuss post-war reorganization of Europe.",
+    "category": "Politics",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Yalta_Conference",
+    "sources": ["Diplomatic Archives", "Historical Records"],
+    "verified": true
+  },
+  {
+    "id": "hiroshima_bombing_1945",
+    "title": "Atomic Bombing of Hiroshima",
+    "date": "1945-08-06",
+    "location": {
+      "latitude": 34.3853,
+      "longitude": 132.4553,
+      "name": "Hiroshima, Japan"
+    },
+    "description": "The U.S. dropped the first atomic bomb on Hiroshima, leading to Japan's surrender in World War II.",
+    "category": "Military",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Atomic_bombings_of_Hiroshima_and_Nagasaki",
+    "sources": ["U.S. Military Archives", "Japanese Records"],
+    "verified": true
+  },
+  {
+    "id": "rosie_the_riveter_1942",
+    "title": "Rosie the Riveter Campaign",
+    "date": "1942-01-01",
+    "location": {
+      "latitude": 38.9072,
+      "longitude": -77.0369,
+      "name": "United States"
+    },
+    "description": "The 'Rosie the Riveter' campaign encouraged women to join the workforce in support of the war effort during World War II.",
+    "category": "Culture",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Rosie_the_Riveter",
+    "sources": ["Cultural Archives", "Historical Records"],
+    "verified": true
+  },
+  {
+    "id": "warsaw_ghetto_uprising_1943",
+    "title": "Warsaw Ghetto Uprising",
+    "date": "1943-04-19",
+    "location": {
+      "latitude": 52.2297,
+      "longitude": 21.0122,
+      "name": "Warsaw, Poland"
+    },
+    "description": "Jewish residents of the Warsaw Ghetto staged an armed uprising against Nazi deportation efforts.",
+    "category": "Military",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Warsaw_Ghetto_Uprising",
+    "sources": ["Holocaust Archives", "Historical Records"],
+    "verified": true
+  },
+  {
+    "id": "first_computer_bug_1945",
+    "title": "First Computer 'Bug' Found",
+    "date": "1945-09-09",
+    "location": {
+      "latitude": 42.3601,
+      "longitude": -71.0589,
+      "name": "Cambridge, Massachusetts"
+    },
+    "description": "Engineers found that the Harvard Mark II computer malfunctioned because of a moth, taped into the logbook as the 'first actual case of a bug being found.'",
+    "category": "Technology",
+    "images": [],
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Software_bug#History",
+    "sources": ["Technical Archives", "Historical Records"],
+    "verified": true
+  },
+  {
     "id": "magna_carta_1215",
     "title": "Magna Carta Signed",
     "date": "1215-06-15",

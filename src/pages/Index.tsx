@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
   const [selectedYear, setSelectedYear] = useState<number>(1941);
+  const [selectedYearRange, setSelectedYearRange] = useState<[number, number]>([1941, 1941]);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
   const [isDataSourcePanelOpen, setIsDataSourcePanelOpen] = useState<boolean>(false);
@@ -30,13 +31,19 @@ const Index = () => {
 
   const handleYearChange = (year: number) => {
     setSelectedYear(year);
+    setSelectedYearRange([year, year]);
   };
 
-  // Load event count for the selected year
+  const handleYearRangeChange = (yearRange: [number, number]) => {
+    setSelectedYearRange(yearRange);
+    setSelectedYear(yearRange[0]); // Keep backward compatibility
+  };
+
+  // Load event count for the selected year range
   useEffect(() => {
     const loadEventCount = async () => {
       try {
-        const events = await historyService.getHistoricalEvents(selectedYear);
+        const events = await historyService.getHistoricalEvents(selectedYearRange);
         setEventCount(events.length);
       } catch (error) {
         console.error('Error loading event count:', error);
@@ -45,7 +52,7 @@ const Index = () => {
     };
 
     loadEventCount();
-  }, [selectedYear, historyService, dataSourceVersion]);
+  }, [selectedYearRange, historyService, dataSourceVersion]);
 
   const handleDataSourceChange = () => {
     setDataSourceVersion(prev => prev + 1);
@@ -95,19 +102,21 @@ const Index = () => {
           <TimelineWithSummary
             selectedYear={selectedYear}
             onYearChange={handleYearChange}
+            onYearRangeChange={handleYearRangeChange} // Add this prop
             eventCount={eventCount}
             onSettingsClick={() => setIsDataSourcePanelOpen(true)}
             summaries={eventSummaries}
-            isLoading={isGeneratingSummary}
+            onSummarizeEvent={handleSummarizeEvent}
+            isGeneratingSummary={isGeneratingSummary}
           />
         </div>
 
-        {/* Right Map Container */}
-        <div className="flex-1 relative min-h-[60vh] lg:min-h-auto">
-          <MapWithClustering 
-            selectedYear={selectedYear} 
+        {/* Right Panel: Map */}
+        <div className="flex-1 relative">
+          <MapWithClustering
+            selectedYearRange={selectedYearRange} // Pass year range instead of single year
             onEventSelect={handleEventSelect}
-            key={dataSourceVersion} // Force re-render when data sources change
+            dataSourceVersion={dataSourceVersion}
           />
         </div>
       </div>

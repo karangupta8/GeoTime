@@ -77,19 +77,29 @@ export class HistoryDataService {
     return HistoryDataService.instance;
   }
 
-  async getHistoricalEvents(year: number): Promise<HistoricalEvent[]> {
-    const cacheKey = `events_${year}`;
+  async getHistoricalEvents(yearOrRange: number | [number, number]): Promise<HistoricalEvent[]> {
+    let cacheKey: string;
+    let apiUrl: string;
+    
+    if (Array.isArray(yearOrRange)) {
+      const [startYear, endYear] = yearOrRange;
+      cacheKey = `events_${startYear}_${endYear}`;
+      apiUrl = `${this.baseUrl}/events?startYear=${startYear}&endYear=${endYear}&limit=50`;
+    } else {
+      cacheKey = `events_${yearOrRange}`;
+      apiUrl = `${this.baseUrl}/events?year=${yearOrRange}&limit=50`;
+    }
     
     // Check cache first
     const cached = this.cache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < this.cacheExpiry) {
-      console.log(`Returning cached events for year ${year}: ${cached.data.length} events`);
+      console.log(`Returning cached events for ${cacheKey}: ${cached.data.length} events`);
       return cached.data;
     }
 
     try {
-      console.log(`Fetching events for year ${year} from API: ${this.baseUrl}/events?year=${year}&limit=50`);
-      const response = await fetch(`${this.baseUrl}/events?year=${year}&limit=50`);
+      console.log(`Fetching events from API: ${apiUrl}`);
+      const response = await fetch(apiUrl);
       
       if (!response.ok) {
         console.error(`API request failed with status ${response.status}: ${response.statusText}`);
@@ -97,10 +107,10 @@ export class HistoryDataService {
       }
       
       const data = await response.json();
-      console.log(`API Response for year ${year}:`, data);
+      console.log(`API Response:`, data);
       
       if (data.success && data.events) {
-        console.log(`Successfully received ${data.events.length} events from API for year ${year}`);
+        console.log(`Successfully received ${data.events.length} events from API`);
         
         // Cache the results
         this.cache.set(cacheKey, {
@@ -116,8 +126,8 @@ export class HistoryDataService {
       console.error('Error fetching events from API:', error);
       
       // Return fallback data
-      const fallbackEvents = this.getFallbackEvents(year);
-      console.log(`Using fallback data for year ${year}: ${fallbackEvents.length} events`);
+      const fallbackEvents = this.getFallbackEvents(yearOrRange);
+      console.log(`Using fallback data: ${fallbackEvents.length} events`);
       
       // Cache fallback data with shorter expiry
       this.cache.set(cacheKey, {
@@ -129,12 +139,19 @@ export class HistoryDataService {
     }
   }
 
-  private getFallbackEvents(year: number): HistoricalEvent[] {
-    // Use the comprehensive demo events as fallback
-    return this.demoEvents.filter(event => {
-      const eventYear = new Date(event.date).getFullYear();
-      return eventYear === year;
-    });
+  private getFallbackEvents(yearOrRange: number | [number, number]): HistoricalEvent[] {
+    if (Array.isArray(yearOrRange)) {
+      const [startYear, endYear] = yearOrRange;
+      return this.demoEvents.filter(event => {
+        const eventYear = new Date(event.date).getFullYear();
+        return eventYear >= startYear && eventYear <= endYear;
+      });
+    } else {
+      return this.demoEvents.filter(event => {
+        const eventYear = new Date(event.date).getFullYear();
+        return eventYear === yearOrRange;
+      });
+    }
   }
 
   async getEventById(id: string): Promise<HistoricalEvent | null> {

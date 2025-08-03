@@ -20,6 +20,16 @@ function loadDemoEvents() {
   }
 }
 
+function getDemoEventsByYearRange(startYear, endYear) {
+  const events = loadDemoEvents();
+  const filteredEvents = events.filter(event => {
+    const eventYear = new Date(event.date).getFullYear();
+    return eventYear >= startYear && eventYear <= endYear;
+  });
+  console.log(`Found ${filteredEvents.length} demo events for year range ${startYear}-${endYear}`);
+  return filteredEvents;
+}
+
 function getDemoEventsByYear(year) {
   const events = loadDemoEvents();
   const filteredEvents = events.filter(event => {
@@ -84,19 +94,37 @@ export default async function handler(req, res) {
       }
 
       // Handle /api/events
-      const { year, category, limit = 50 } = query;
+      const { year, startYear, endYear, category, limit = 50 } = query;
       
-      if (!year) {
-        return res.status(400).json({ error: 'Year parameter is required' });
+      // Support both single year and year range
+      let events;
+      let yearDisplay; // Add this variable to store the year display value
+      
+      if (startYear && endYear) {
+        // Year range mode
+        const startYearNum = parseInt(startYear);
+        const endYearNum = parseInt(endYear);
+        
+        if (isNaN(startYearNum) || isNaN(endYearNum) || 
+            startYearNum < -5000 || endYearNum > new Date().getFullYear() ||
+            startYearNum > endYearNum) {
+          return res.status(400).json({ error: 'Invalid year range parameters' });
+        }
+        
+        events = getDemoEventsByYearRange(startYearNum, endYearNum);
+        yearDisplay = `${startYearNum}-${endYearNum}`; // Set the display value
+      } else if (year) {
+        // Single year mode (backward compatibility)
+        const yearNum = parseInt(year);
+        if (isNaN(yearNum) || yearNum < -5000 || yearNum > new Date().getFullYear()) {
+          return res.status(400).json({ error: 'Invalid year parameter' });
+        }
+        events = getDemoEventsByYear(yearNum);
+        yearDisplay = yearNum.toString(); // Set the display value
+      } else {
+        return res.status(400).json({ error: 'Year or year range parameters are required' });
       }
 
-      const yearNum = parseInt(year);
-      if (isNaN(yearNum) || yearNum < -5000 || yearNum > new Date().getFullYear()) {
-        return res.status(400).json({ error: 'Invalid year parameter' });
-      }
-
-      let events = getDemoEventsByYear(yearNum);
-      
       // Filter by category if specified
       if (category) {
         events = events.filter(event => 
@@ -109,7 +137,7 @@ export default async function handler(req, res) {
       
       res.json({
         success: true,
-        year: yearNum,
+        year: yearDisplay, // Use the properly set display value
         count: events.length,
         events
       });

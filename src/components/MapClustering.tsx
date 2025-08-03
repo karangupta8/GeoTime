@@ -10,11 +10,12 @@ import { HistoryDataService } from '@/services/HistoryDataService';
 import { HistoricalEvent } from '@/types/HistoricalEvent';
 
 interface MapProps {
-  selectedYear: number;
+  selectedYearRange: [number, number]; // Change from selectedYear to selectedYearRange
   onEventSelect: (event: any) => void;
+  dataSourceVersion?: number; // Add this prop
 }
 
-const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) => {
+const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelect, dataSourceVersion }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
@@ -102,7 +103,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
     };
   }, [hasMapboxConfig, mapboxConfig]);
 
-  // Load historical events for the selected year
+  // Load historical events for the selected year range
   useEffect(() => {
     if (!hasMapboxConfig) return;
 
@@ -111,8 +112,8 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
       setError(null);
       
       try {
-        const historicalEvents = await historyService.getHistoricalEvents(selectedYear);
-        console.log(`Map component received ${historicalEvents.length} events for year ${selectedYear}`);
+        const historicalEvents = await historyService.getHistoricalEvents(selectedYearRange);
+        console.log(`Map component received ${historicalEvents.length} events for year range ${selectedYearRange[0]}-${selectedYearRange[1]}`);
         setEvents(historicalEvents);
       } catch (error) {
         console.error('Error loading historical events:', error);
@@ -128,7 +129,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
     };
 
     loadEvents();
-  }, [selectedYear, hasMapboxConfig, historyService, toast]);
+  }, [selectedYearRange, hasMapboxConfig, historyService, toast, dataSourceVersion]); // Add dataSourceVersion to dependencies
 
   const updateClusters = () => {
     if (!map.current || !superclusterRef.current) return;
@@ -253,14 +254,14 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
       },
     }));
 
-    console.log(`Clustering ${points.length} events for year ${selectedYear}`);
+    console.log(`Clustering ${points.length} events for year range ${selectedYearRange[0]}-${selectedYearRange[1]}`);
     
     // Load points into supercluster
     superclusterRef.current.load(points);
     
     // Update clusters
     updateClusters();
-  }, [events, selectedYear, hasMapboxConfig, onEventSelect]);
+  }, [events, selectedYearRange, hasMapboxConfig, onEventSelect]);
 
   if (!hasMapboxConfig) {
     return (
@@ -310,7 +311,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
       {/* Event Count Display */}
       <div className="absolute top-4 right-4 bg-card/90 backdrop-blur-sm p-3 rounded-lg border border-border/50">
         <p className="text-sm text-muted-foreground">
-          Events for {selectedYear}: <span className="text-foreground font-semibold">{events.length}</span>
+          Events for {selectedYearRange[0]}-{selectedYearRange[1]}: <span className="text-foreground font-semibold">{events.length}</span>
         </p>
       </div>
     </div>

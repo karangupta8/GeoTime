@@ -7,11 +7,18 @@ import { Settings } from 'lucide-react';
 interface TimelineSliderProps {
   selectedYear: number;
   onYearChange: (year: number) => void;
+  onYearRangeChange?: (yearRange: [number, number]) => void; // Add this prop
   eventCount?: number;
   onSettingsClick?: () => void;
 }
 
-const TimelineSlider: React.FC<TimelineSliderProps> = ({ selectedYear, onYearChange, eventCount = 0, onSettingsClick }) => {
+const TimelineSlider: React.FC<TimelineSliderProps> = ({ 
+  selectedYear, 
+  onYearChange, 
+  onYearRangeChange, // Add this prop
+  eventCount = 0, 
+  onSettingsClick 
+}) => {
   const minYear = -1000; // 1000 BCE
   const maxYear = 2025;   // 2025 CE
   const [yearRange, setYearRange] = useState<[number, number]>([1941, 1945]);
@@ -46,8 +53,12 @@ const TimelineSlider: React.FC<TimelineSliderProps> = ({ selectedYear, onYearCha
     }
     
     setYearRange([start, end]);
-    // For now, use the start year as the selected year
+    
+    // Call both callbacks for backward compatibility
     onYearChange(start);
+    if (onYearRangeChange) {
+      onYearRangeChange([start, end]);
+    }
   };
 
   const handleInputChange = (field: 'start' | 'end', value: string) => {
@@ -95,6 +106,9 @@ const TimelineSlider: React.FC<TimelineSliderProps> = ({ selectedYear, onYearCha
     
     setYearRange([start, end]);
     onYearChange(start);
+    if (onYearRangeChange) {
+      onYearRangeChange([start, end]);
+    }
     setInputError('');
   };
 
