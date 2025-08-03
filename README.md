@@ -157,7 +157,7 @@ Visit [http://localhost:8080](http://localhost:8080) and enter your Mapbox API k
 
 The application follows a client-server architecture with the following data flow:
 
-1. **Data Source**: Historical events are stored in `server/src/data/demoEvents.json` containing structured event data with fields like title, year, coordinates, category, and description.
+1. **Data Source**: Historical events are stored in `public/demoEvents.json` containing structured event data with fields like title, year, coordinates, category, and description.
 
 2. **Backend API**: Node.js/Express server (`server/src/index.js`) serves event data via REST endpoints:
    - `GET /api/events?year=YYYY` - Fetches events filtered by year

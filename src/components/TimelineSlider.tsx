@@ -14,17 +14,20 @@ interface TimelineSliderProps {
 const TimelineSlider: React.FC<TimelineSliderProps> = ({ selectedYear, onYearChange, eventCount = 0, onSettingsClick }) => {
   const minYear = -1000; // 1000 BCE
   const maxYear = 2025;   // 2025 CE
-  const [yearRange, setYearRange] = useState<[number, number]>([selectedYear, selectedYear]);
-  const [startYear, setStartYear] = useState(selectedYear.toString());
-  const [endYear, setEndYear] = useState(selectedYear.toString());
+  const [yearRange, setYearRange] = useState<[number, number]>([1941, 1945]);
+  const [startYear, setStartYear] = useState('1941');
+  const [endYear, setEndYear] = useState('1945');
   const [inputError, setInputError] = useState('');
 
   useEffect(() => {
-    setStartYear(selectedYear.toString());
-    setEndYear(selectedYear.toString());
-    setYearRange([selectedYear, selectedYear]);
-    setInputError('');
-  }, [selectedYear]);
+    // Only update if the selectedYear is different from our current range
+    if (selectedYear !== yearRange[0]) {
+      setStartYear(selectedYear.toString());
+      setEndYear(selectedYear.toString());
+      setYearRange([selectedYear, selectedYear]);
+      setInputError('');
+    }
+  }, [selectedYear, yearRange]);
 
   const formatYear = (year: number): string => {
     if (year < 0) {

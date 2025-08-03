@@ -11,7 +11,7 @@ import { HistoricalEvent } from '@/types/HistoricalEvent';
 import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
-  const [selectedYear, setSelectedYear] = useState<number>(1969);
+  const [selectedYear, setSelectedYear] = useState<number>(1941);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
   const [isDataSourcePanelOpen, setIsDataSourcePanelOpen] = useState<boolean>(false);
