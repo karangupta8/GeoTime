@@ -16,13 +16,13 @@ const getEnv = (key, fallback) => process.env[key] || fallback;
 export const config = {
   apis: {
     mapbox: {
-      publicToken: getEnv('MAPBOX_PUBLIC_TOKEN', ''),
-      secretToken: getEnv('MAPBOX_SECRET_TOKEN', '')
+      publicToken: getEnv('MAPBOX_PUBLIC_TOKEN', 'pk.eyJ1Ijoia2FyYW5ndXB0YTgiLCJhIjoiY21kam8zdm5oMGhoNTJyczU3aGtiZTcwMiJ9.BZfMMtGuqqoXp7PjG4QCmg'),
+      secretToken: getEnv('MAPBOX_SECRET_TOKEN', 'sk.eyJ1Ijoia2FyYW5ndXB0YTgiLCJhIjoiY21kam8zdm5oMGhoNTJyczU3aGtiZTcwMiJ9.BZfMMtGuqqoXp7PjG4QCmg')
     },
     llm: {
       provider: getEnv('LLM_PROVIDER', 'openai'), // openai | anthropic | google | groq
       openai: {
-        apiKey: getEnv('OPENAI_API_KEY', ''),
+        apiKey: getEnv('OPENAI_API_KEY', 'pk.eyJ1Ijoia2FyYW5ndXB0YTgiLCJhIjoiY21kam8zdm5oMGhoNTJyczU3aGtiZTcwMiJ9.BZfMMtGuqqoXp7PjG4QCmg'),
         model: getEnv('OPENAI_MODEL', 'gpt-4o-mini'),
         maxTokens: parseInt(getEnv('OPENAI_MAX_TOKENS', '150')),
         temperature: parseFloat(getEnv('OPENAI_TEMPERATURE', '0.7')),
