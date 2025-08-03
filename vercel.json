@@ -1,0 +1,53 @@
+
+{
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "@vercel/node"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/events",
+      "destination": "/api/events"
+    },
+    {
+      "source": "/api/events/:id",
+      "destination": "/api/events"
+    },
+    {
+      "source": "/api/events/categories",
+      "destination": "/api/events"
+    },
+    {
+      "source": "/api/mapbox/config",
+      "destination": "/api/mapbox/config"
+    },
+    {
+      "source": "/health",
+      "destination": "/api/health"
+    },
+    {
+      "source": "/api/summarize",
+      "destination": "/api/summarize"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    }
+  ]
+}

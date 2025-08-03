@@ -13,8 +13,8 @@ class SummaryService {
   private baseUrl: string;
 
   private constructor() {
-    // Use local server API for summary generation
-    this.baseUrl = 'http://localhost:3001/api';
+    // Use relative API paths for summary generation
+    this.baseUrl = '/api';
   }
 
   static getInstance(): SummaryService {

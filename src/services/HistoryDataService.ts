@@ -226,7 +226,7 @@ export class HistoryDataService {
   // Check API health
   async checkApiHealth(): Promise<boolean> {
     try {
-      const response = await fetch(`${this.baseUrl.replace('/api', '')}/health`);
+      const response = await fetch('/health');
       return response.ok;
     } catch (error) {
       console.error('API health check failed:', error);

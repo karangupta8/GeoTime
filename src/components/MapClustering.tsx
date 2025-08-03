@@ -31,7 +31,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYear, onEventSelect }) 
   useEffect(() => {
     const fetchMapboxConfig = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/mapbox/config');
+        const response = await fetch('/api/mapbox/config');
         if (!response.ok) {
           throw new Error(`Failed to fetch Mapbox config: ${response.status}`);
         }
