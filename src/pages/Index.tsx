@@ -9,10 +9,11 @@ import { HistoryDataService } from '@/services/HistoryDataService';
 import SummaryService, { EventSummary } from '@/services/SummaryService';
 import { HistoricalEvent } from '@/types/HistoricalEvent';
 import { useToast } from '@/hooks/use-toast';
+import { DEFAULT_YEAR_RANGE } from '@/constants/defaults';
 
 const Index = () => {
   const [selectedYear, setSelectedYear] = useState<number>(1941);
-  const [selectedYearRange, setSelectedYearRange] = useState<[number, number]>([1941, 1941]);
+  const [selectedYearRange, setSelectedYearRange] = useState<[number, number]>(DEFAULT_YEAR_RANGE);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
   const [isDataSourcePanelOpen, setIsDataSourcePanelOpen] = useState<boolean>(false);
