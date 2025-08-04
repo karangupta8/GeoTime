@@ -23,6 +23,18 @@
       "destination": "/api/mapbox/config"
     },
     {
+      "source": "/api/mapbox/status",
+      "destination": "/api/mapbox/status"
+    },
+    {
+      "source": "/api/mapbox/geocode",
+      "destination": "/api/mapbox/geocode"
+    },
+    {
+      "source": "/api/mapbox/reverse-geocode",
+      "destination": "/api/mapbox/reverse-geocode"
+    },
+    {
       "source": "/health",
       "destination": "/api/health"
     },
