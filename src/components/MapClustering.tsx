@@ -171,29 +171,49 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
         // This is a cluster
         const clusterMarker = createClusterMarker(
           cluster.properties.point_count,
-          cluster.properties.cluster_id
+          cluster.properties.cluster_id,
+          lng,
+          lat
         );
         
-        const marker = new mapboxgl.Marker(clusterMarker)
-          .setLngLat([lng, lat])
-          .addTo(map.current!);
+        if (clusterMarker) {
+          const marker = new mapboxgl.Marker({
+            element: clusterMarker,
+            anchor: 'center'
+          })
+            .setLngLat([lng, lat])
+            .addTo(map.current!);
 
-        markersRef.current.push(marker);
+          markersRef.current.push(marker);
+        }
       } else {
         // This is a single event
         const event = cluster.properties as HistoricalEvent;
         const eventMarker = createEventMarker(event);
         
-        const marker = new mapboxgl.Marker(eventMarker)
-          .setLngLat([lng, lat])
-          .addTo(map.current!);
+        // Validate event coordinates
+        if (isFinite(lng) && isFinite(lat)) {
+          const marker = new mapboxgl.Marker({
+            element: eventMarker,
+            anchor: 'center'
+          })
+            .setLngLat([lng, lat])
+            .addTo(map.current!);
 
-        markersRef.current.push(marker);
+          markersRef.current.push(marker);
+        } else {
+          console.error('Invalid event coordinates:', { lng, lat, event });
+        }
       }
     });
   };
 
-  const createClusterMarker = (pointCount: number, clusterId: number) => {
+  const createClusterMarker = (pointCount: number, clusterId: number, lng: number, lat: number) => {
+    // Validate coordinates
+    if (!isFinite(lng) || !isFinite(lat)) {
+      console.error('Invalid cluster coordinates:', { lng, lat, clusterId });
+      return null;
+    }
     const size = pointCount < 10 ? 40 : pointCount < 100 ? 50 : 60;
     
     const markerElement = document.createElement('div');
@@ -217,13 +237,20 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
     markerElement.textContent = pointCount.toString();
 
     markerElement.addEventListener('click', () => {
-      if (superclusterRef.current) {
-        const expansionZoom = superclusterRef.current.getClusterExpansionZoom(clusterId);
-        map.current?.easeTo({
-          center: [0, 0], // Will be set by the cluster coordinates
-          zoom: expansionZoom,
-          duration: 500,
-        });
+      try {
+        if (superclusterRef.current && isFinite(lng) && isFinite(lat)) {
+          console.log('Cluster click - expanding to coordinates:', { lng, lat, clusterId });
+          const expansionZoom = superclusterRef.current.getClusterExpansionZoom(clusterId);
+          map.current?.easeTo({
+            center: [lng, lat], // Use actual cluster coordinates
+            zoom: expansionZoom,
+            duration: 500,
+          });
+        } else {
+          console.error('Cannot expand cluster: invalid coordinates or supercluster', { lng, lat, clusterId });
+        }
+      } catch (error) {
+        console.error('Error expanding cluster:', error, { lng, lat, clusterId });
       }
     });
 
