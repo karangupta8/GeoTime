@@ -179,7 +179,8 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
         if (clusterMarker) {
           const marker = new mapboxgl.Marker({
             element: clusterMarker,
-            anchor: 'center'
+            anchor: 'center',
+            offset: [0, 0] // Ensure no offset
           })
             .setLngLat([lng, lat])
             .addTo(map.current!);
@@ -195,7 +196,8 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
         if (isFinite(lng) && isFinite(lat)) {
           const marker = new mapboxgl.Marker({
             element: eventMarker,
-            anchor: 'center'
+            anchor: 'center',
+            offset: [0, 0] // Ensure no offset
           })
             .setLngLat([lng, lat])
             .addTo(map.current!);
@@ -214,6 +216,7 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
       console.error('Invalid cluster coordinates:', { lng, lat, clusterId });
       return null;
     }
+    
     const size = pointCount < 10 ? 40 : pointCount < 100 ? 50 : 60;
     
     const markerElement = document.createElement('div');
@@ -233,16 +236,20 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
       cursor: pointer;
       box-shadow: 0 0 20px hsl(var(--historical-gold) / 0.5);
       transition: all 0.3s ease;
+      position: relative;
+      transform-origin: center center;
+      pointer-events: auto;
     `;
     markerElement.textContent = pointCount.toString();
 
-    markerElement.addEventListener('click', () => {
+    markerElement.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent event bubbling
       try {
         if (superclusterRef.current && isFinite(lng) && isFinite(lat)) {
           console.log('Cluster click - expanding to coordinates:', { lng, lat, clusterId });
           const expansionZoom = superclusterRef.current.getClusterExpansionZoom(clusterId);
           map.current?.easeTo({
-            center: [lng, lat], // Use actual cluster coordinates
+            center: [lng, lat],
             zoom: expansionZoom,
             duration: 500,
           });
@@ -254,11 +261,13 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
       }
     });
 
-    markerElement.addEventListener('mouseenter', () => {
+    markerElement.addEventListener('mouseenter', (e) => {
+      e.stopPropagation();
       markerElement.style.transform = 'scale(1.1)';
     });
 
-    markerElement.addEventListener('mouseleave', () => {
+    markerElement.addEventListener('mouseleave', (e) => {
+      e.stopPropagation();
       markerElement.style.transform = 'scale(1)';
     });
 
