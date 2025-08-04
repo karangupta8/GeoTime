@@ -180,7 +180,9 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
           const marker = new mapboxgl.Marker({
             element: clusterMarker,
             anchor: 'center',
-            offset: [0, 0] // Ensure no offset
+            offset: [0, 0], // Ensure no offset
+            pitchAlignment: 'map',
+            rotationAlignment: 'map'
           })
             .setLngLat([lng, lat])
             .addTo(map.current!);
@@ -192,12 +194,14 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
         const event = cluster.properties as HistoricalEvent;
         const eventMarker = createEventMarker(event);
         
-        // Validate event coordinates
-        if (isFinite(lng) && isFinite(lat)) {
+        // Validate event coordinates more strictly
+        if (isFinite(lng) && isFinite(lat) && Math.abs(lng) <= 180 && Math.abs(lat) <= 90) {
           const marker = new mapboxgl.Marker({
             element: eventMarker,
             anchor: 'center',
-            offset: [0, 0] // Ensure no offset
+            offset: [0, 0], // Ensure no offset
+            pitchAlignment: 'map',
+            rotationAlignment: 'map'
           })
             .setLngLat([lng, lat])
             .addTo(map.current!);
@@ -211,13 +215,16 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
   };
 
   const createClusterMarker = (pointCount: number, clusterId: number, lng: number, lat: number) => {
-    // Validate coordinates
-    if (!isFinite(lng) || !isFinite(lat)) {
+    // Validate coordinates more strictly
+    if (!isFinite(lng) || !isFinite(lat) || Math.abs(lng) > 180 || Math.abs(lat) > 90) {
       console.error('Invalid cluster coordinates:', { lng, lat, clusterId });
       return null;
     }
     
-    const size = pointCount < 10 ? 40 : pointCount < 100 ? 50 : 60;
+    // Responsive sizing for mobile devices
+    const isMobile = window.innerWidth < 768;
+    const baseSize = isMobile ? 44 : 40; // Ensure minimum touch target of 44px on mobile
+    const size = pointCount < 10 ? baseSize : pointCount < 100 ? baseSize + 10 : baseSize + 20;
     
     const markerElement = document.createElement('div');
     markerElement.className = 'cluster-marker';
@@ -235,23 +242,32 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
       font-size: ${size > 50 ? '14px' : '12px'};
       cursor: pointer;
       box-shadow: 0 0 20px hsl(var(--historical-gold) / 0.5);
-      transition: all 0.3s ease;
+      transition: transform 0.2s ease;
       position: relative;
       transform-origin: center center;
       pointer-events: auto;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      outline: none;
     `;
     markerElement.textContent = pointCount.toString();
 
     markerElement.addEventListener('click', (e) => {
+      e.preventDefault();
       e.stopPropagation(); // Prevent event bubbling
       try {
-        if (superclusterRef.current && isFinite(lng) && isFinite(lat)) {
+        if (superclusterRef.current && isFinite(lng) && isFinite(lat) && Math.abs(lng) <= 180 && Math.abs(lat) <= 90) {
           console.log('Cluster click - expanding to coordinates:', { lng, lat, clusterId });
           const expansionZoom = superclusterRef.current.getClusterExpansionZoom(clusterId);
+          // Ensure zoom level is valid
+          const targetZoom = Math.min(expansionZoom, 18);
           map.current?.easeTo({
             center: [lng, lat],
-            zoom: expansionZoom,
-            duration: 500,
+            zoom: targetZoom,
+            duration: 400,
+            essential: true // Ensures the animation completes even if interrupted
           });
         } else {
           console.error('Cannot expand cluster: invalid coordinates or supercluster', { lng, lat, clusterId });
@@ -275,15 +291,20 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
   };
 
   const createEventMarker = (event: HistoricalEvent) => {
+    const isMobile = window.innerWidth < 768;
+    const markerSize = isMobile ? 'w-8 h-8' : 'w-6 h-6'; // Larger touch target on mobile
+    
     const markerElement = document.createElement('div');
     markerElement.className = 'historical-marker';
     markerElement.innerHTML = `
-      <div class="w-6 h-6 bg-historical-gold rounded-full border-2 border-background shadow-glow animate-glow cursor-pointer hover:scale-110 transition-transform duration-300">
+      <div class="${markerSize} bg-historical-gold rounded-full border-2 border-background shadow-glow animate-glow cursor-pointer hover:scale-110 transition-transform duration-300">
         <div class="w-full h-full bg-historical-gold rounded-full animate-float"></div>
       </div>
     `;
 
-    markerElement.addEventListener('click', () => {
+    markerElement.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       onEventSelect(event);
     });
 
@@ -336,31 +357,31 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
   }
 
   return (
-    <div className="relative w-full h-screen">
+    <div className="relative w-full h-full">
       <div ref={mapContainer} className="absolute inset-0" />
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-background/10" />
       
       {/* Loading State */}
       {isLoadingEvents && (
-        <div className="absolute inset-0 bg-background/50 flex items-center justify-center">
+        <div className="absolute inset-0 bg-background/50 flex items-center justify-center z-10">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-sm text-muted-foreground">Loading historical events...</p>
+            <div className="animate-spin rounded-full h-8 sm:h-12 w-8 sm:w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-xs sm:text-sm text-muted-foreground">Loading historical events...</p>
           </div>
         </div>
       )}
 
       {/* Error State */}
       {error && (
-        <div className="absolute top-4 left-4 right-4 bg-destructive/90 text-destructive-foreground p-4 rounded-lg">
-          <p className="font-medium">Error loading events</p>
-          <p className="text-sm opacity-90">{error}</p>
+        <div className="absolute top-2 sm:top-4 left-2 sm:left-4 right-2 sm:right-4 bg-destructive/90 text-destructive-foreground p-3 sm:p-4 rounded-lg z-10">
+          <p className="font-medium text-sm">Error loading events</p>
+          <p className="text-xs sm:text-sm opacity-90">{error}</p>
         </div>
       )}
 
       {/* Event Count Display */}
-      <div className="absolute top-4 right-4 bg-card/90 backdrop-blur-sm p-3 rounded-lg border border-border/50">
-        <p className="text-sm text-muted-foreground">
+      <div className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-card/90 backdrop-blur-sm p-2 sm:p-3 rounded-lg border border-border/50 z-10">
+        <p className="text-xs sm:text-sm text-muted-foreground">
           Events for {selectedYearRange[0]}-{selectedYearRange[1]}: <span className="text-foreground font-semibold">{events.length}</span>
         </p>
       </div>

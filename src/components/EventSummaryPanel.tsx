@@ -20,32 +20,42 @@ interface EventSummaryPanelProps {
 const EventSummaryPanel: React.FC<EventSummaryPanelProps> = ({ summaries, isLoading }) => {
   if (summaries.length === 0 && !isLoading) {
     return (
-      <div className="w-80 flex-shrink-0 p-4 border-r border-border/20 bg-card/50 backdrop-blur-sm">
-        <div className="text-center py-8">
-          <Sparkles className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
-          <h3 className="text-lg font-semibold text-foreground mb-2">Event Summaries</h3>
-          <p className="text-sm text-muted-foreground">
-            Click "Summarize Event" on any map marker to generate AI summaries here.
+      <div className="w-full border-border/20 bg-transparent h-full flex flex-col">
+        <div className="p-3 sm:p-4 border-b border-border/20 flex-shrink-0">
+          <div className="flex items-center gap-2 mb-1 sm:mb-2">
+            <Sparkles className="w-4 sm:w-5 h-4 sm:h-5 text-accent" />
+            <h3 className="text-base sm:text-lg font-semibold text-foreground">Event Summaries</h3>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            AI-generated insights from historical events
           </p>
+        </div>
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="text-center">
+            <Sparkles className="w-8 sm:w-12 h-8 sm:h-12 mx-auto mb-3 sm:mb-4 text-muted-foreground/50" />
+            <p className="text-xs sm:text-sm text-muted-foreground max-w-xs">
+              Click "Summarize Event" on any map marker to generate AI summaries here.
+            </p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full border-border/20 bg-card/50 backdrop-blur-sm">
-      <div className="p-4 border-b border-border/20">
-        <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="w-5 h-5 text-accent" />
-          <h3 className="text-lg font-semibold text-foreground">Event Summaries</h3>
+    <div className="w-full border-border/20 bg-transparent h-full flex flex-col">
+      <div className="p-3 sm:p-4 border-b border-border/20 flex-shrink-0">
+        <div className="flex items-center gap-2 mb-1 sm:mb-2">
+          <Sparkles className="w-4 sm:w-5 h-4 sm:h-5 text-accent" />
+          <h3 className="text-base sm:text-lg font-semibold text-foreground">Event Summaries</h3>
         </div>
         <p className="text-xs text-muted-foreground">
           AI-generated insights from historical events
         </p>
       </div>
 
-      <ScrollArea className="h-[calc(100vh-8rem)]">
-        <div className="p-4 space-y-4">
+      <ScrollArea className="flex-1 min-h-0">
+        <div className="p-2 sm:p-4 space-y-2 sm:space-y-4">
           {isLoading && (
             <Card className="p-4 border border-border/50 bg-card/80">
               <div className="flex items-center gap-3">
@@ -56,10 +66,10 @@ const EventSummaryPanel: React.FC<EventSummaryPanelProps> = ({ summaries, isLoad
           )}
           
           {summaries.map((summary, index) => (
-            <Card key={summary.id} className="p-4 border border-border/50 bg-card/80 hover:bg-card/90 transition-colors">
-              <div className="space-y-3">
+            <Card key={summary.id} className="p-3 sm:p-4 border border-border/50 bg-card/80 hover:bg-card/90 transition-colors">
+              <div className="space-y-2 sm:space-y-3">
                 <div className="flex items-start gap-2">
-                  <Calendar className="w-4 h-4 mt-1 text-accent flex-shrink-0" />
+                  <Calendar className="w-4 h-4 mt-0.5 text-accent flex-shrink-0" />
                   <div className="min-w-0">
                     <h4 className="font-medium text-foreground text-sm leading-tight">
                       {summary.title}
@@ -74,7 +84,7 @@ const EventSummaryPanel: React.FC<EventSummaryPanelProps> = ({ summaries, isLoad
                   </div>
                 </div>
                 
-                <p className="text-sm text-foreground leading-relaxed">
+                <p className="text-xs sm:text-sm text-foreground leading-relaxed">
                   {summary.summary}
                 </p>
                 
@@ -85,7 +95,7 @@ const EventSummaryPanel: React.FC<EventSummaryPanelProps> = ({ summaries, isLoad
               </div>
               
               {index < summaries.length - 1 && (
-                <Separator className="mt-4" />
+                <Separator className="mt-3 sm:mt-4" />
               )}
             </Card>
           ))}

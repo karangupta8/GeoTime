@@ -98,8 +98,8 @@ const Index = () => {
       
       {/* Main Layout - Mobile Responsive */}
       <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)]">
-        {/* Left Panel: Combined Timeline + Summary - Collapsible on mobile */}
-        <div className="w-full lg:w-96 lg:flex-shrink-0 p-4 lg:p-6 border-b lg:border-b-0 lg:border-r border-border/20 overflow-y-auto max-h-[40vh] lg:max-h-none">
+        {/* Left Panel: Combined Timeline + Summary - Responsive for mobile */}
+        <div className="w-full lg:w-96 xl:w-[420px] lg:flex-shrink-0 p-2 sm:p-4 lg:p-6 border-b lg:border-b-0 lg:border-r border-border/20 overflow-y-auto max-h-[45vh] sm:max-h-[40vh] lg:max-h-none">
           <TimelineWithSummary
             selectedYear={selectedYear}
             onYearChange={handleYearChange}
@@ -112,8 +112,8 @@ const Index = () => {
           />
         </div>
 
-        {/* Right Panel: Map */}
-        <div className="flex-1 relative">
+        {/* Right Panel: Map - Responsive height for mobile */}
+        <div className="flex-1 relative min-h-[55vh] sm:min-h-[60vh] lg:min-h-0">
           <MapWithClustering
             selectedYearRange={selectedYearRange} // Pass year range instead of single year
             onEventSelect={handleEventSelect}

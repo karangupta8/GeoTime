@@ -1,0 +1,100 @@
+/* Map Component Styles */
+.mapboxgl-map {
+  font-family: inherit;
+}
+
+/* Ensure marker positioning is precise */
+.mapboxgl-marker {
+  cursor: pointer;
+}
+
+/* Historical marker styles */
+.historical-marker {
+  cursor: pointer;
+}
+
+.historical-marker:hover {
+  z-index: 1000;
+}
+
+/* Cluster marker styles to prevent drift */
+.cluster-marker {
+  cursor: pointer;
+  user-select: none;
+  /* Ensure stable positioning */
+  position: relative;
+  /* Prevent text selection which can cause drift */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Popup styles */
+.mapboxgl-popup {
+  z-index: 1050;
+}
+
+.mapboxgl-popup-content {
+  border-radius: 8px;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+}
+
+/* Control positioning for mobile */
+.mapboxgl-ctrl-top-right {
+  top: 10px;
+  right: 10px;
+}
+
+.mapboxgl-ctrl-bottom-left {
+  bottom: 10px;
+  left: 10px;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .mapboxgl-ctrl-top-right {
+    top: 5px;
+    right: 5px;
+  }
+  
+  .mapboxgl-ctrl-bottom-left {
+    bottom: 5px;
+    left: 5px;
+  }
+  
+  .mapboxgl-ctrl-group {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Make navigation controls smaller on mobile */
+  .mapboxgl-ctrl-group > button {
+    width: 32px;
+    height: 32px;
+  }
+  
+  /* Improve touch targets for mobile */
+  .cluster-marker {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  .historical-marker {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Ensure proper touch handling */
+  .mapboxgl-map {
+    touch-action: pan-x pan-y;
+  }
+  
+  /* Hide attribution on very small screens */
+  @media (max-width: 480px) {
+    .mapboxgl-ctrl-attrib {
+      display: none;
+    }
+  }
+}

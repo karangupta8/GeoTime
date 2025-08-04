@@ -120,17 +120,17 @@ const TimelineSlider: React.FC<TimelineSliderProps> = ({
   };
 
   return (
-    <div className="h-full bg-card/95 backdrop-blur-sm border border-border/50 rounded-2xl shadow-elegant p-6">
-      <div className="space-y-6 h-full flex flex-col">
+    <div className="h-full bg-transparent p-3 sm:p-4 lg:p-6">
+      <div className="space-y-3 sm:space-y-4 lg:space-y-6 h-full flex flex-col">
         <div className="flex items-start justify-between">
-          <div>
-            <h2 className="text-xl font-semibold text-foreground mb-2">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-1 sm:mb-2">
               Historical Timeline
             </h2>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs sm:text-sm text-muted-foreground">
               {eventCount} event{eventCount !== 1 ? 's' : ''} found
             </div>
-            <div className="text-2xl font-bold text-accent mt-2">
+            <div className="text-xl sm:text-2xl font-bold text-accent mt-1 sm:mt-2 leading-tight">
               {yearRange[0] === yearRange[1] 
                 ? formatYear(yearRange[0])
                 : `${formatYear(yearRange[0])} - ${formatYear(yearRange[1])}`
@@ -142,14 +142,14 @@ const TimelineSlider: React.FC<TimelineSliderProps> = ({
               onClick={onSettingsClick}
               variant="ghost"
               size="sm"
-              className="mt-1"
+              className="mt-1 flex-shrink-0"
             >
               <Settings className="w-4 h-4" />
             </Button>
           )}
         </div>
         
-        <div>
+        <div className="lg:block hidden">
           <label className="text-sm font-medium text-foreground mb-2 block">
             Year Range (max 5 years):
           </label>
@@ -165,7 +165,7 @@ const TimelineSlider: React.FC<TimelineSliderProps> = ({
                 onKeyPress={(e) => handleKeyPress(e, 'start')}
                 onBlur={handleStartYearBlur}
                 placeholder="Start"
-                className={`${inputError ? 'border-destructive' : ''}`}
+                className={`text-sm ${inputError ? 'border-destructive' : ''}`}
               />
             </div>
             <div>
@@ -178,7 +178,7 @@ const TimelineSlider: React.FC<TimelineSliderProps> = ({
                 onChange={(e) => handleInputChange('end', e.target.value)}
                 onKeyPress={(e) => handleKeyPress(e, 'end')}
                 placeholder="End"
-                className={`${inputError ? 'border-destructive' : ''}`}
+                className={`text-sm ${inputError ? 'border-destructive' : ''}`}
               />
             </div>
           </div>
@@ -198,29 +198,34 @@ const TimelineSlider: React.FC<TimelineSliderProps> = ({
           </p>
         </div>
         
-        <div className="flex-1 flex flex-col justify-center">
+        <div className="flex-1 flex flex-col justify-center min-h-0">
           <div className="relative">
-            <label className="text-sm font-medium text-foreground mb-3 block">
+            <label className="text-xs sm:text-sm font-medium text-foreground mb-2 sm:mb-3 block">
               Year Range (max 5 years):
             </label>
-            <Slider
-              value={yearRange}
-              onValueChange={handleValueChange}
-              min={minYear}
-              max={maxYear}
-              step={1}
-              className="w-full"
-              minStepsBetweenThumbs={0}
-            />
+            <div className="px-2 sm:px-0">
+              <Slider
+                value={yearRange}
+                onValueChange={handleValueChange}
+                min={minYear}
+                max={maxYear}
+                step={1}
+                className="w-full touch-none"
+                minStepsBetweenThumbs={0}
+              />
+            </div>
             
-            <div className="flex justify-between mt-3 text-xs text-muted-foreground">
-              <span>{formatYear(minYear)}</span>
-              <span>{formatYear(maxYear)}</span>
+            <div className="flex justify-between mt-2 sm:mt-3 text-xs text-muted-foreground px-2 sm:px-0">
+              <span className="text-[10px] sm:text-xs">{formatYear(minYear)}</span>
+              <span className="text-[10px] sm:text-xs">{formatYear(maxYear)}</span>
             </div>
           </div>
           
-          <div className="text-center text-sm text-muted-foreground mt-6">
+          <div className="text-center text-xs sm:text-sm text-muted-foreground mt-3 sm:mt-6 hidden sm:block">
             Drag to select a year or range.
+          </div>
+          <div className="text-center text-xs text-muted-foreground mt-2 block sm:hidden">
+            Drag to select range.
           </div>
         </div>
       </div>
