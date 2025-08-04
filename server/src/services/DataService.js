@@ -5,7 +5,8 @@ import { dirname, join } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const demoEventsPath = join(process.cwd(), 'public', 'demoEvents.json');
+// Go up from server/src/services to server, then up to project root, then to public
+const demoEventsPath = join(__dirname, '../../..', 'public', 'demoEvents.json');
 
 let demoEvents = [];
 try {

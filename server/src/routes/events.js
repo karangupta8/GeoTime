@@ -4,25 +4,53 @@ import DataService from '../services/DataService.js';
 const router = express.Router();
 const dataService = new DataService();
 
-// Get historical events by year
+// Get historical events by year or year range
 router.get('/', async (req, res) => {
   try {
-    const { year, category, limit = 50 } = req.query;
+    const { year, startYear, endYear, category, limit = 50 } = req.query;
     
-    if (!year) {
-      return res.status(400).json({ error: 'Year parameter is required' });
+    let events = [];
+    
+    // Handle year range (startYear and endYear)
+    if (startYear && endYear) {
+      const startYearNum = parseInt(startYear);
+      const endYearNum = parseInt(endYear);
+      
+      if (isNaN(startYearNum) || isNaN(endYearNum) || 
+          startYearNum < -5000 || endYearNum > new Date().getFullYear() ||
+          startYearNum > endYearNum) {
+        return res.status(400).json({ error: 'Invalid year range parameters' });
+      }
+      
+      // Get events for each year in the range
+      const allEvents = [];
+      for (let y = startYearNum; y <= endYearNum; y++) {
+        const yearEvents = await dataService.getHistoricalEvents(y, { category, limit: parseInt(limit) });
+        allEvents.push(...yearEvents);
+      }
+      
+      // Sort by date and limit results
+      events = allEvents
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        .slice(0, parseInt(limit));
+        
+    } else if (year) {
+      // Handle single year
+      const yearNum = parseInt(year);
+      if (isNaN(yearNum) || yearNum < -5000 || yearNum > new Date().getFullYear()) {
+        return res.status(400).json({ error: 'Invalid year parameter' });
+      }
+      
+      events = await dataService.getHistoricalEvents(yearNum, { category, limit: parseInt(limit) });
+    } else {
+      return res.status(400).json({ error: 'Either year or startYear/endYear parameters are required' });
     }
-
-    const yearNum = parseInt(year);
-    if (isNaN(yearNum) || yearNum < -5000 || yearNum > new Date().getFullYear()) {
-      return res.status(400).json({ error: 'Invalid year parameter' });
-    }
-
-    const events = await dataService.getHistoricalEvents(yearNum, { category, limit: parseInt(limit) });
     
     res.json({
       success: true,
-      year: yearNum,
+      year: year ? parseInt(year) : null,
+      startYear: startYear ? parseInt(startYear) : null,
+      endYear: endYear ? parseInt(endYear) : null,
       count: events.length,
       events
     });
