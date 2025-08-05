@@ -120,17 +120,17 @@ const TimelineSlider: React.FC<TimelineSliderProps> = ({
   };
 
   return (
-    <div className="h-full bg-card/95 backdrop-blur-sm border border-border/50 rounded-2xl shadow-elegant p-6">
-      <div className="space-y-6 h-full flex flex-col">
+    <div className="h-full bg-card/95 backdrop-blur-sm border border-border/50 rounded-2xl shadow-elegant p-3 lg:p-6">
+      <div className="space-y-4 lg:space-y-6 h-full flex flex-col">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-foreground mb-2">
+            <h2 className="text-lg lg:text-xl font-semibold text-foreground mb-1 lg:mb-2">
               Historical Timeline
             </h2>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-xs lg:text-sm text-muted-foreground">
               {eventCount} event{eventCount !== 1 ? 's' : ''} found
             </div>
-            <div className="text-2xl font-bold text-accent mt-2">
+            <div className="text-xl lg:text-2xl font-bold text-accent mt-1 lg:mt-2">
               {yearRange[0] === yearRange[1] 
                 ? formatYear(yearRange[0])
                 : `${formatYear(yearRange[0])} - ${formatYear(yearRange[1])}`
@@ -150,10 +150,10 @@ const TimelineSlider: React.FC<TimelineSliderProps> = ({
         </div>
         
         <div>
-          <label className="text-sm font-medium text-foreground mb-2 block">
+          <label className="text-xs lg:text-sm font-medium text-foreground mb-2 block">
             Year Range (max 5 years):
           </label>
-          <div className="grid grid-cols-2 gap-2 mb-3">
+          <div className="grid grid-cols-2 gap-2 mb-2 lg:mb-3">
             <div>
               <label className="text-xs text-muted-foreground">Start Year</label>
               <Input

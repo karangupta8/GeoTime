@@ -98,8 +98,8 @@ const Index = () => {
       
       {/* Main Layout - Mobile Responsive */}
       <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)]">
-        {/* Left Panel: Combined Timeline + Summary - Collapsible on mobile */}
-        <div className="w-full lg:w-96 lg:flex-shrink-0 p-4 lg:p-6 border-b lg:border-b-0 lg:border-r border-border/20 overflow-y-auto max-h-[40vh] lg:max-h-none">
+        {/* Left Panel: Combined Timeline + Summary - Better mobile sizing */}
+        <div className="w-full lg:w-96 lg:flex-shrink-0 p-2 lg:p-6 border-b lg:border-b-0 lg:border-r border-border/20 overflow-y-auto min-h-[60vh] lg:min-h-0 lg:max-h-none">
           <TimelineWithSummary
             selectedYear={selectedYear}
             onYearChange={handleYearChange}

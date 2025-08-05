@@ -45,7 +45,7 @@ const EventSummaryPanel: React.FC<EventSummaryPanelProps> = ({ summaries, isLoad
         </p>
       </div>
 
-      <ScrollArea className="h-[calc(100vh-8rem)]">
+      <ScrollArea className="h-[200px] lg:h-[calc(100vh-8rem)]">
         <div className="p-4 space-y-4">
           {isLoading && (
             <Card className="p-4 border border-border/50 bg-card/80">
