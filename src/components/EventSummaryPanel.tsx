@@ -15,6 +15,7 @@ interface EventSummary {
 interface EventSummaryPanelProps {
   summaries: EventSummary[];
   isLoading: boolean;
+  onSummarizeEvent?: (event: any) => void;
 }
 
 const EventSummaryPanel: React.FC<EventSummaryPanelProps> = ({ summaries, isLoading }) => {

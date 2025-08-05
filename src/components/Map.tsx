@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
-import HistoryDataService from '@/services/HistoryDataService';
+import { HistoryDataService } from '@/services/HistoryDataService';
 
 // Import the styles
 import './Map.css';
@@ -115,7 +115,7 @@ const Map: React.FC<MapProps> = ({ selectedYear, selectedEvent }) => {
 
   const loadHistoricalEvents = async () => {
     try {
-      const events = await historyService.getEventsByYear(selectedYear);
+      const events = await historyService.getHistoricalEvents(selectedYear);
       
       if (!map.current || !events.length) return;
 
@@ -125,12 +125,12 @@ const Map: React.FC<MapProps> = ({ selectedYear, selectedEvent }) => {
 
       // Add markers for events
       events.forEach((event) => {
-        if (event.latitude && event.longitude) {
+        if (event.location?.latitude && event.location?.longitude) {
           const marker = new mapboxgl.Marker({
             color: '#ef4444',
             scale: 0.8
           })
-            .setLngLat([event.longitude, event.latitude])
+            .setLngLat([event.location.longitude, event.location.latitude])
             .setPopup(
               new mapboxgl.Popup({ offset: 25 })
                 .setHTML(`
@@ -168,9 +168,9 @@ const Map: React.FC<MapProps> = ({ selectedYear, selectedEvent }) => {
 
   // Fly to selected event
   useEffect(() => {
-    if (selectedEvent && map.current && selectedEvent.latitude && selectedEvent.longitude) {
+    if (selectedEvent && map.current && selectedEvent.location?.latitude && selectedEvent.location?.longitude) {
       map.current.flyTo({
-        center: [selectedEvent.longitude, selectedEvent.latitude],
+        center: [selectedEvent.location.longitude, selectedEvent.location.latitude],
         zoom: 8,
         duration: 2000
       });
