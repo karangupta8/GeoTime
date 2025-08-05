@@ -235,10 +235,11 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
       font-size: ${size > 50 ? '14px' : '12px'};
       cursor: pointer;
       box-shadow: 0 0 20px hsl(var(--historical-gold) / 0.5);
-      transition: all 0.3s ease;
-      position: relative;
-      transform-origin: center center;
+      transition: box-shadow 0.3s ease;
+      position: absolute;
+      transform-origin: 50% 50%;
       pointer-events: auto;
+      z-index: 10;
     `;
     markerElement.textContent = pointCount.toString();
 
@@ -263,12 +264,12 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
 
     markerElement.addEventListener('mouseenter', (e) => {
       e.stopPropagation();
-      markerElement.style.transform = 'scale(1.1)';
+      markerElement.style.boxShadow = '0 0 30px hsl(var(--historical-gold) / 0.8)';
     });
 
     markerElement.addEventListener('mouseleave', (e) => {
       e.stopPropagation();
-      markerElement.style.transform = 'scale(1)';
+      markerElement.style.boxShadow = '0 0 20px hsl(var(--historical-gold) / 0.5)';
     });
 
     return markerElement;
@@ -277,14 +278,33 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
   const createEventMarker = (event: HistoricalEvent) => {
     const markerElement = document.createElement('div');
     markerElement.className = 'historical-marker';
-    markerElement.innerHTML = `
-      <div class="w-6 h-6 bg-historical-gold rounded-full border-2 border-background shadow-glow animate-glow cursor-pointer hover:scale-110 transition-transform duration-300">
-        <div class="w-full h-full bg-historical-gold rounded-full animate-float"></div>
-      </div>
+    markerElement.style.cssText = `
+      width: 24px;
+      height: 24px;
+      background: hsl(var(--historical-gold));
+      border: 2px solid hsl(var(--background));
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 15px hsl(var(--historical-gold) / 0.5);
+      transition: box-shadow 0.3s ease;
+      position: absolute;
+      transform-origin: 50% 50%;
+      pointer-events: auto;
+      z-index: 5;
     `;
 
     markerElement.addEventListener('click', () => {
       onEventSelect(event);
+    });
+
+    markerElement.addEventListener('mouseenter', (e) => {
+      e.stopPropagation();
+      markerElement.style.boxShadow = '0 0 25px hsl(var(--historical-gold) / 0.8)';
+    });
+
+    markerElement.addEventListener('mouseleave', (e) => {
+      e.stopPropagation();
+      markerElement.style.boxShadow = '0 0 15px hsl(var(--historical-gold) / 0.5)';
     });
 
     return markerElement;
