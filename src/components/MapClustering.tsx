@@ -80,6 +80,8 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
       zoom: mapboxConfig.zoom,
       center: mapboxConfig.center,
       pitch: mapboxConfig.pitch,
+      trackResize: false, // Disable analytics tracking
+      attributionControl: false, // Disable attribution control to reduce tracking
     });
 
     // Add navigation controls

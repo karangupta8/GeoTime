@@ -81,7 +81,9 @@ const Map: React.FC<MapProps> = ({ selectedYear, selectedEvent }) => {
       center: mapboxConfig.center || [20, 40],
       pitch: mapboxConfig.pitch || 0,
       maxZoom: mapboxConfig.maxZoom || 18,
-      minZoom: mapboxConfig.minZoom || 0
+      minZoom: mapboxConfig.minZoom || 0,
+      trackResize: false, // Disable analytics tracking
+      attributionControl: false, // Disable attribution control to reduce tracking
     });
 
     map.current.on('load', () => {
