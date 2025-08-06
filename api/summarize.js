@@ -15,34 +15,29 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { events, year } = req.body;
+    const { title, description } = req.body;
     
-    if (!events || !Array.isArray(events)) {
-      return res.status(400).json({ error: 'Events array is required' });
+    if (!title || !description) {
+      return res.status(400).json({ error: 'Title and description are required' });
     }
 
-    if (!year) {
-      return res.status(400).json({ error: 'Year parameter is required' });
-    }
-
-    // Simple summarization without external APIs for now
-    const eventCount = events.length;
-    const categories = [...new Set(events.map(e => e.category).filter(Boolean))];
-    const locations = [...new Set(events.map(e => e.location?.name).filter(Boolean))];
+    console.log(`Generating summary for: ${title}`);
     
-    const summary = `In ${year}, there were ${eventCount} significant historical events across ${categories.length} categories. ` +
-      `The main categories included ${categories.slice(0, 3).join(', ')}. ` +
-      `Events occurred in various locations including ${locations.slice(0, 3).join(', ')}${locations.length > 3 ? ' and others' : ''}.`;
-
+    // Try to generate summary with LLM
+    let result;
+    try {
+      result = await generateLLMSummary(title, description);
+    } catch (llmError) {
+      console.warn('LLM API failed, using fallback:', llmError.message);
+      result = generateFallbackSummary(title, description);
+    }
+    
     res.json({
       success: true,
-      summary,
-      metadata: {
-        year,
-        eventCount,
-        categories,
-        topLocations: locations.slice(0, 5)
-      }
+      summary: result.summary,
+      provider: result.provider,
+      model: result.model,
+      timestamp: new Date().toISOString()
     });
   } catch (error) {
     console.error('Error generating summary:', error);
@@ -51,4 +46,136 @@ export default async function handler(req, res) {
       message: error.message 
     });
   }
+}
+
+// Function to generate summary using LLM API
+async function generateLLMSummary(title, description) {
+  // Get API key from environment variables
+  const apiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY || process.env.GOOGLE_API_KEY || process.env.GROQ_API_KEY;
+  
+  if (!apiKey) {
+    throw new Error('No LLM API key configured');
+  }
+
+  // Determine which provider to use based on available API keys
+  let provider = 'openai';
+  let model = 'gpt-4o-mini';
+  let baseUrl = 'https://api.openai.com/v1';
+  let headers = { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' };
+  let payload = {
+    model: model,
+    messages: [
+      {
+        role: 'system',
+        content: 'You are a historical expert. Create engaging, accurate, and concise summaries of historical events. Focus on significance, context, and impact. Keep summaries to exactly 100 words or less.'
+      },
+      {
+        role: 'user',
+        content: `Summarize this historical event in 100 words or less:\n\nTitle: ${title}\n\nDescription: ${description}`
+      }
+    ],
+    max_tokens: 150,
+    temperature: 0.7
+  };
+
+  // Try different providers if available
+  if (process.env.ANTHROPIC_API_KEY) {
+    provider = 'anthropic';
+    model = 'claude-3-haiku-20240307';
+    baseUrl = 'https://api.anthropic.com/v1';
+    headers = { 'x-api-key': process.env.ANTHROPIC_API_KEY, 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01' };
+    payload = {
+      model: model,
+      max_tokens: 150,
+      messages: [
+        {
+          role: 'user',
+          content: `You are a historical expert. Create engaging, accurate, and concise summaries of historical events. Focus on significance, context, and impact. Keep summaries to exactly 100 words or less.
+
+Summarize this historical event in 100 words or less:
+
+Title: ${title}
+
+Description: ${description}`
+        }
+      ],
+      temperature: 0.7
+    };
+  } else if (process.env.GOOGLE_API_KEY) {
+    provider = 'google';
+    model = 'gemini-1.5-flash';
+    baseUrl = 'https://generativelanguage.googleapis.com/v1';
+    const prompt = `You are a historical expert. Create engaging, accurate, and concise summaries of historical events. Focus on significance, context, and impact. Keep summaries to exactly 100 words or less.
+
+Summarize this historical event in 100 words or less:
+
+Title: ${title}
+
+Description: ${description}`;
+    
+    payload = {
+      contents: [{
+        parts: [{ text: prompt }]
+      }],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 150,
+      }
+    };
+  } else if (process.env.GROQ_API_KEY) {
+    provider = 'groq';
+    model = 'llama3-8b-8192';
+    baseUrl = 'https://api.groq.com/openai/v1';
+    headers = { 'Authorization': `Bearer ${process.env.GROQ_API_KEY}`, 'Content-Type': 'application/json' };
+  }
+
+  const endpoint = provider === 'google' 
+    ? `${baseUrl}/models/${model}:generateContent?key=${process.env.GOOGLE_API_KEY}`
+    : `${baseUrl}/chat/completions`;
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    throw new Error(`LLM API request failed: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  
+  let summary;
+  if (provider === 'openai' || provider === 'groq') {
+    summary = data.choices?.[0]?.message?.content;
+  } else if (provider === 'anthropic') {
+    summary = data.content?.[0]?.text;
+  } else if (provider === 'google') {
+    summary = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  }
+
+  if (!summary) {
+    throw new Error('Invalid response from LLM API');
+  }
+
+  return {
+    summary,
+    provider,
+    model
+  };
+}
+
+// Fallback summary generator (no API call)
+function generateFallbackSummary(title, description) {
+  console.log('Using fallback summary generation');
+  
+  const truncatedDescription = description.length > 100 
+    ? description.substring(0, 97) + '...'
+    : description;
+  
+  return {
+    summary: truncatedDescription,
+    provider: 'fallback',
+    model: 'none'
+  };
 }
