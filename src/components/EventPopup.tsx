@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin, ExternalLink, Verified, Sparkles } from 'lucide-react';
 import { HistoricalEvent } from '@/types/HistoricalEvent';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface EventPopupProps {
   event: HistoricalEvent | null;
@@ -13,6 +14,8 @@ interface EventPopupProps {
 }
 
 const EventPopup: React.FC<EventPopupProps> = ({ event, isOpen, onClose, onSummarizeEvent }) => {
+  const isMobile = useIsMobile();
+  
   if (!event) return null;
 
   const formatDate = (dateString: string) => {
@@ -40,10 +43,16 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, isOpen, onClose, onSumma
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md w-full mx-4 bg-card/95 backdrop-blur-sm border-border/50">
-        <DialogHeader className="space-y-3">
+      <DialogContent className={`${
+        isMobile 
+          ? 'max-w-full w-full h-full m-0 p-0 rounded-none max-h-screen overflow-y-auto' 
+          : 'max-w-md w-full mx-4'
+      } bg-card/95 backdrop-blur-sm border-border/50`}>
+        <DialogHeader className={`space-y-3 ${isMobile ? 'p-4 pb-0' : ''}`}>
           <div className="flex items-start justify-between gap-3">
-            <DialogTitle className="text-xl font-bold text-foreground pr-8">
+            <DialogTitle className={`${
+              isMobile ? 'text-lg' : 'text-xl'
+            } font-bold text-foreground pr-8`}>
               {event.title}
             </DialogTitle>
           </div>
@@ -67,7 +76,7 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, isOpen, onClose, onSumma
           </div>
         </DialogHeader>
         
-        <div className="space-y-4">
+        <div className={`space-y-4 ${isMobile ? 'p-4 pt-0' : ''}`}>
           <div className="flex items-start gap-2">
             <MapPin className="w-4 h-4 mt-1 text-accent" />
             <div className="text-sm text-muted-foreground">
@@ -120,7 +129,9 @@ const EventPopup: React.FC<EventPopupProps> = ({ event, isOpen, onClose, onSumma
             )}
             
             <Button 
-              className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+              className={`w-full bg-accent hover:bg-accent/90 text-accent-foreground ${
+                isMobile ? 'h-12 text-base' : ''
+              }`}
               onClick={() => {
                 const url = event.wikipediaUrl || `https://en.wikipedia.org/wiki/${encodeURIComponent(event.title)}`;
                 window.open(url, '_blank');

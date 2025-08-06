@@ -217,7 +217,8 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
       return null;
     }
     
-    const size = pointCount < 10 ? 40 : pointCount < 100 ? 50 : 60;
+    // Mobile-friendly sizing - larger touch targets
+    const size = pointCount < 10 ? 48 : pointCount < 100 ? 56 : 64;
     
     const markerElement = document.createElement('div');
     markerElement.className = 'cluster-marker';
@@ -279,10 +280,10 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
     const markerElement = document.createElement('div');
     markerElement.className = 'historical-marker';
     markerElement.style.cssText = `
-      width: 24px;
-      height: 24px;
+      width: 32px;
+      height: 32px;
       background: hsl(var(--historical-gold));
-      border: 2px solid hsl(var(--background));
+      border: 3px solid hsl(var(--background));
       border-radius: 50%;
       cursor: pointer;
       box-shadow: 0 0 15px hsl(var(--historical-gold) / 0.5);
@@ -291,6 +292,11 @@ const MapWithClustering: React.FC<MapProps> = ({ selectedYearRange, onEventSelec
       transform-origin: 50% 50%;
       pointer-events: auto;
       z-index: 5;
+      min-height: 44px;
+      min-width: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     `;
 
     markerElement.addEventListener('click', () => {

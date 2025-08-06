@@ -3,9 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Settings, Database, Loader2, RefreshCw } from 'lucide-react';
+import { Settings, Database, Loader2, RefreshCw, X } from 'lucide-react';
 import { HistoryDataService } from '@/services/HistoryDataService';
 import { DataSourceConfig } from '@/types/HistoricalEvent';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface DataSourcePanelProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ const DataSourcePanel: React.FC<DataSourcePanelProps> = ({
   const [dataSources, setDataSources] = useState<DataSourceConfig[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const historyService = HistoryDataService.getInstance();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (isOpen) {
@@ -66,8 +68,12 @@ const DataSourcePanel: React.FC<DataSourcePanelProps> = ({
 
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-card/95 backdrop-blur-sm border-border/50">
-        <CardHeader className="space-y-3">
+      <Card className={`${
+        isMobile 
+          ? 'w-full h-full max-w-none rounded-none m-0' 
+          : 'w-full max-w-md'
+      } bg-card/95 backdrop-blur-sm border-border/50`}>
+        <CardHeader className={`space-y-3 ${isMobile ? 'pb-3' : ''}`}>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Database className="w-5 h-5" />
@@ -75,11 +81,11 @@ const DataSourcePanel: React.FC<DataSourcePanelProps> = ({
             </CardTitle>
             <Button 
               variant="ghost" 
-              size="sm" 
+              size={isMobile ? "default" : "sm"}
               onClick={onClose}
-              className="h-8 w-8 p-0"
+              className={isMobile ? "h-10 w-10 p-0" : "h-8 w-8 p-0"}
             >
-              ×
+              <X className="w-4 h-4" />
             </Button>
           </div>
           <p className="text-sm text-muted-foreground">
@@ -87,7 +93,7 @@ const DataSourcePanel: React.FC<DataSourcePanelProps> = ({
           </p>
         </CardHeader>
         
-        <CardContent className="space-y-4">
+        <CardContent className={`space-y-4 ${isMobile ? 'flex-1 overflow-y-auto' : ''}`}>
           {dataSources.map((source) => (
             <div 
               key={source.name}

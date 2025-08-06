@@ -134,5 +134,34 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    /* Improve touch interactions */
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  /* Mobile-friendly touch targets */
+  button, 
+  [role="button"], 
+  input, 
+  select, 
+  textarea {
+    @apply touch-manipulation;
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Prevent text selection on touch interfaces */
+  .touch-target {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Smooth scrolling for mobile */
+  @media (max-width: 768px) {
+    * {
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+    }
   }
 }
