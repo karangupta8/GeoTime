@@ -78,7 +78,7 @@ const Map: React.FC<MapProps> = ({ selectedYear, selectedEvent }) => {
       style: mapboxConfig.defaultStyle || 'mapbox://styles/mapbox/dark-v11',
       projection: mapboxConfig.projection as any || 'globe',
       zoom: mapboxConfig.zoom || 1.5,
-      center: [0, 20], // Centered globe position
+      center: [0, 20], // Force centered position
       pitch: mapboxConfig.pitch || 0,
       maxZoom: mapboxConfig.maxZoom || 18,
       minZoom: mapboxConfig.minZoom || 0,
