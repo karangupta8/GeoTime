@@ -50,11 +50,24 @@ export default async function handler(req, res) {
 
 // Function to generate summary using LLM API
 async function generateLLMSummary(title, description) {
+  // Check which API keys are available
+  const hasOpenAI = !!process.env.OPENAI_API_KEY;
+  const hasAnthropic = !!process.env.ANTHROPIC_API_KEY;
+  const hasGoogle = !!process.env.GOOGLE_API_KEY;
+  const hasGroq = !!process.env.GROQ_API_KEY;
+  
+  console.log('Available API keys:', {
+    openai: hasOpenAI,
+    anthropic: hasAnthropic,
+    google: hasGoogle,
+    groq: hasGroq
+  });
+
   // Get API key from environment variables
   const apiKey = process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY || process.env.GOOGLE_API_KEY || process.env.GROQ_API_KEY;
   
   if (!apiKey) {
-    throw new Error('No LLM API key configured');
+    throw new Error('No LLM API key configured. Please set OPENAI_API_KEY, ANTHROPIC_API_KEY, GOOGLE_API_KEY, or GROQ_API_KEY in your environment variables.');
   }
 
   // Determine which provider to use based on available API keys
@@ -78,8 +91,8 @@ async function generateLLMSummary(title, description) {
     temperature: 0.7
   };
 
-  // Try different providers if available
-  if (process.env.ANTHROPIC_API_KEY) {
+  // Try different providers if available (priority order)
+  if (hasAnthropic) {
     provider = 'anthropic';
     model = 'claude-3-haiku-20240307';
     baseUrl = 'https://api.anthropic.com/v1';
@@ -101,7 +114,7 @@ Description: ${description}`
       ],
       temperature: 0.7
     };
-  } else if (process.env.GOOGLE_API_KEY) {
+  } else if (hasGoogle) {
     provider = 'google';
     model = 'gemini-1.5-flash';
     baseUrl = 'https://generativelanguage.googleapis.com/v1';
@@ -122,16 +135,20 @@ Description: ${description}`;
         maxOutputTokens: 150,
       }
     };
-  } else if (process.env.GROQ_API_KEY) {
+  } else if (hasGroq) {
     provider = 'groq';
     model = 'llama3-8b-8192';
     baseUrl = 'https://api.groq.com/openai/v1';
     headers = { 'Authorization': `Bearer ${process.env.GROQ_API_KEY}`, 'Content-Type': 'application/json' };
   }
 
+  console.log(`Attempting to use ${provider} API with model ${model}`);
+
   const endpoint = provider === 'google' 
     ? `${baseUrl}/models/${model}:generateContent?key=${process.env.GOOGLE_API_KEY}`
     : `${baseUrl}/chat/completions`;
+
+  console.log(`Making request to: ${endpoint}`);
 
   const response = await fetch(endpoint, {
     method: 'POST',
@@ -139,11 +156,16 @@ Description: ${description}`;
     body: JSON.stringify(payload)
   });
 
+  console.log(`Response status: ${response.status} ${response.statusText}`);
+
   if (!response.ok) {
-    throw new Error(`LLM API request failed: ${response.status} ${response.statusText}`);
+    const errorText = await response.text();
+    console.error('API Error Response:', errorText);
+    throw new Error(`LLM API request failed: ${response.status} ${response.statusText} - ${errorText}`);
   }
 
   const data = await response.json();
+  console.log('API Response received:', JSON.stringify(data, null, 2));
   
   let summary;
   if (provider === 'openai' || provider === 'groq') {
@@ -155,8 +177,11 @@ Description: ${description}`;
   }
 
   if (!summary) {
-    throw new Error('Invalid response from LLM API');
+    console.error('No summary found in API response:', data);
+    throw new Error('Invalid response from LLM API - no summary content found');
   }
+
+  console.log(`Successfully generated summary using ${provider}:`, summary.substring(0, 100) + '...');
 
   return {
     summary,
