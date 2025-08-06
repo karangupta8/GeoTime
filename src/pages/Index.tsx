@@ -4,7 +4,6 @@ import TimelineSlider from '@/components/TimelineSlider';
 import EventPopup from '@/components/EventPopup';
 import TimelineWithSummary from '@/components/TimelineWithSummary'; // ✅ Make sure the path is correct
 import Header from '@/components/Header';
-import DataSourcePanel from '@/components/DataSourcePanel';
 import { HistoryDataService } from '@/services/HistoryDataService';
 import SummaryService, { EventSummary } from '@/services/SummaryService';
 import { HistoricalEvent } from '@/types/HistoricalEvent';
@@ -17,7 +16,6 @@ const Index = () => {
   const [selectedYearRange, setSelectedYearRange] = useState<[number, number]>(DEFAULT_YEAR_RANGE);
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
-  const [isDataSourcePanelOpen, setIsDataSourcePanelOpen] = useState<boolean>(false);
   const [dataSourceVersion, setDataSourceVersion] = useState<number>(0);
   const [eventCount, setEventCount] = useState<number>(0);
   const [eventSummaries, setEventSummaries] = useState<EventSummary[]>([]);
@@ -98,7 +96,6 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-ocean">
       <Header 
-        onSettingsClick={() => setIsDataSourcePanelOpen(true)} 
         isMobile={isMobile}
         mobileActivePanel={mobileActivePanel}
         onMobilePanelChange={setMobileActivePanel}
@@ -142,7 +139,6 @@ const Index = () => {
                   onYearChange={handleYearChange}
                   onYearRangeChange={handleYearRangeChange}
                   eventCount={eventCount}
-                  onSettingsClick={() => setIsDataSourcePanelOpen(true)}
                   summaries={eventSummaries}
                   onSummarizeEvent={handleSummarizeEvent}
                   isGeneratingSummary={isGeneratingSummary}
@@ -169,7 +165,6 @@ const Index = () => {
               onYearChange={handleYearChange}
               onYearRangeChange={handleYearRangeChange}
               eventCount={eventCount}
-              onSettingsClick={() => setIsDataSourcePanelOpen(true)}
               summaries={eventSummaries}
               onSummarizeEvent={handleSummarizeEvent}
               isGeneratingSummary={isGeneratingSummary}
@@ -193,13 +188,6 @@ const Index = () => {
         isOpen={isPopupOpen}
         onClose={() => setIsPopupOpen(false)}
         onSummarizeEvent={handleSummarizeEvent}
-      />
-
-      {/* Data Source Panel */}
-      <DataSourcePanel
-        isOpen={isDataSourcePanelOpen}
-        onClose={() => setIsDataSourcePanelOpen(false)}
-        onDataSourceChange={handleDataSourceChange}
       />
     </div>
   );

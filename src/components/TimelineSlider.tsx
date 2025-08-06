@@ -122,11 +122,8 @@ const TimelineSlider: React.FC<TimelineSliderProps> = ({
   return (
     <div className="h-full bg-card/95 backdrop-blur-sm border border-border/50 rounded-2xl shadow-elegant p-3 lg:p-6">
       <div className="space-y-4 lg:space-y-6 h-full flex flex-col">
-        <div className="flex items-start justify-between">
+        <div className="flex items-center justify-between mb-3 lg:mb-4">
           <div>
-            <h2 className="text-lg lg:text-xl font-semibold text-foreground mb-1 lg:mb-2">
-              Historical Timeline
-            </h2>
             <div className="text-xs lg:text-sm text-muted-foreground">
               {eventCount} event{eventCount !== 1 ? 's' : ''} found
             </div>
@@ -137,16 +134,6 @@ const TimelineSlider: React.FC<TimelineSliderProps> = ({
               }
             </div>
           </div>
-          {onSettingsClick && (
-            <Button
-              onClick={onSettingsClick}
-              variant="ghost"
-              size="sm"
-              className="mt-1"
-            >
-              <Settings className="w-4 h-4" />
-            </Button>
-          )}
         </div>
         
         <div>

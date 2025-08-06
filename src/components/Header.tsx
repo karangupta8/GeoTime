@@ -1,16 +1,13 @@
 import React from 'react';
-import { Globe2, Settings } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Globe2 } from 'lucide-react';
 
 interface HeaderProps {
-  onSettingsClick: () => void;
   isMobile?: boolean;
   mobileActivePanel?: 'timeline' | 'map';
   onMobilePanelChange?: (panel: 'timeline' | 'map') => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
-  onSettingsClick, 
   isMobile = false,
   mobileActivePanel,
   onMobilePanelChange
@@ -37,15 +34,6 @@ const Header: React.FC<HeaderProps> = ({
             )}
           </div>
         </div>
-
-        <Button
-          variant="ghost"
-          size={isMobile ? "sm" : "default"}
-          onClick={onSettingsClick}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          <Settings className={isMobile ? "w-4 h-4" : "w-5 h-5"} />
-        </Button>
       </div>
     </header>
   );
